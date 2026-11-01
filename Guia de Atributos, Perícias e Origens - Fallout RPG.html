@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guia de Atributos, Perícias e Origens - Fallout RPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700;1,8..60,400&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+:root{--display:'Barlow Condensed','Arial Narrow',Arial,sans-serif;--serif:'Source Serif 4',Georgia,serif;--script:'Yellowtail','Brush Script MT',cursive;
+--bg1:#2f629c;--bg2:#12325a;--paper:#fdfcf8;--ink:#17191c;--mut:#4b5460;--hair:#d3d5d7;--black:#121416;--gold:#f2b925;--amber:#8a5d00;--note:#fbefb4;--cream:#f6e7a3;--soft:#faf3d2;--tab:#66707b;--focus:#17385f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#1c3b60;--bg2:#09162a;--paper:#162233;--ink:#eaeef3;--mut:#a9b5c4;--hair:#33465f;--black:#070b11;--amber:#f2b925;--note:#3b3718;--cream:#2c3d56;--soft:#1d2c42;--tab:#9eacbd;--focus:#f2b925}}
+:root[data-theme="dark"]{--bg1:#1c3b60;--bg2:#09162a;--paper:#162233;--ink:#eaeef3;--mut:#a9b5c4;--hair:#33465f;--black:#070b11;--amber:#f2b925;--note:#3b3718;--cream:#2c3d56;--soft:#1d2c42;--tab:#9eacbd;--focus:#f2b925}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font:400 16px/1.6 var(--serif);background:radial-gradient(110% 70% at 50% -10%,rgba(255,255,255,.14),transparent 62%),repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 1px,transparent 1px 4px),linear-gradient(180deg,var(--bg1),var(--bg2));background-attachment:fixed}
+header{max-width:960px;margin:0 auto;padding:26px 16px 22px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;color:#fff}
+.plate{display:inline-block;transform:skewX(-7deg);padding:2px 26px 4px;border:3px solid #e3e8ed;border-radius:9px;background:linear-gradient(180deg,#27548a,#17375f);box-shadow:inset 0 0 0 2px #0d2341,0 8px 20px rgba(0,0,0,.4)}
+.plate b{display:block;transform:skewX(7deg);font:800 italic 3.2rem/1.05 var(--display);color:#fff}
+.logo{text-align:center}.logo span{display:block;margin-top:8px;font:700 1.05rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.chap{text-align:right;margin-left:auto}.chap em{font:italic 1rem var(--serif);color:#f4d36b}
+h1{margin:2px 0 4px;font:700 clamp(2.1rem,6vw,3.3rem)/.98 var(--display);text-transform:uppercase;text-shadow:0 2px 6px rgba(0,0,0,.45)}
+.chap p{margin:0 0 0 auto;max-width:32em;font-size:.95rem;color:#dbe6f2}
+@media(max-width:620px){header{justify-content:center;flex-direction:column;align-items:center}.chap{text-align:center;margin:0}.chap p{margin:0 auto}}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);box-shadow:0 2px 0 var(--black)}
+nav ul{list-style:none;margin:0 auto;padding:0 16px;max-width:960px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav a{display:block;padding:11px 14px 9px;font:700 .88rem/1 var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--tab);text-decoration:none;white-space:nowrap}
+nav a[aria-current="true"]{background:var(--gold);color:#17191c;clip-path:polygon(0 0,100% 0,100% 74%,86% 100%,0 100%)}
+.page{max-width:960px;margin:22px auto 48px;background:var(--paper);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.body{padding:6px 30px 8px}
+@media(max-width:600px){.body{padding:4px 16px 6px}}
+section{padding:22px 0 18px;scroll-margin-top:60px}
+h2{margin:0 0 8px;padding-top:6px;border-top:2px solid var(--ink);font:700 1.7rem/1.08 var(--display);text-transform:uppercase}
+h3{margin:18px 0 6px;padding-top:4px;border-top:2px solid var(--ink);font:700 1.15rem/1.1 var(--display);text-transform:uppercase}
+p{margin:0 0 10px;max-width:68ch}.hint{color:var(--mut);font-size:.92rem}
+.pgfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--black);color:#fff;padding:12px 24px;font:italic 700 .95rem/1.2 var(--display)}.pgfoot span:last-child{color:var(--gold)}
+.box{margin:14px 0;padding:12px 18px 14px;background:var(--note);font-size:.95rem;clip-path:polygon(0 2%,1.5% 0,60% 1.2%,100% 0,99.3% 55%,100% 100%,40% 98.8%,0 100%);box-shadow:inset 0 0 0 2px var(--gold)}
+.box p{margin:0 0 6px}.scr{display:block;margin-bottom:2px;font:400 1.7rem/1.15 var(--script);color:var(--amber)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin-top:12px}
+.card{border:1.5px solid var(--ink);padding:0 0 10px;background:var(--paper)}
+.card header{display:flex;align-items:baseline;gap:10px;padding:6px 12px;margin:0;background:var(--black);color:#fff;max-width:none}
+.card h4{margin:0;font:700 1.25rem/1.1 var(--display);text-transform:uppercase}.card header b{margin-left:auto;font:700 1.25rem var(--display);color:var(--gold)}
+.card p{padding:8px 12px 0;margin:0;font-size:.92rem}.card p+p{padding-top:5px}.card em{font-style:normal;font-weight:700}
+button,select{font:inherit}
+button{cursor:pointer;border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:2px;padding:6px 12px;min-height:44px;font:600 1.02rem/1.1 var(--display);letter-spacing:.03em;text-transform:uppercase;text-align:left}
+button:hover{background:var(--gold);color:#17191c}
+button[aria-pressed="true"]{background:var(--black);color:var(--gold);border-color:var(--black);box-shadow:inset 5px 0 0 var(--gold);padding-left:18px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.cards{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:8px 0 12px}
+th{background:var(--black);color:#fff;font:700 .95rem var(--display);text-transform:uppercase;text-align:left;padding:5px 10px}
+td{padding:6px 10px;vertical-align:top;border-bottom:1px solid var(--hair)}tbody tr:nth-child(odd){background:var(--soft)}
+.tw{overflow-x:auto}
+.spec{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin:10px 0}
+.spec .lb{display:block;padding:3px 0;background:var(--black);color:#fff;font:700 .85rem/1.2 var(--display);letter-spacing:.04em}
+.spec b{display:block;padding:2px 0;background:var(--cream);font:700 1.5rem/1.25 var(--display)}
+.spec small{display:block;padding-bottom:3px;background:var(--cream);font-size:.78rem;color:var(--mut)}
+.spec div+div{border-left:1px solid var(--paper)}
+.calc{display:grid;gap:12px 22px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:12px 0}
+.calc label{display:block;font:700 1.05rem var(--display);text-transform:uppercase}
+.calc input[type=range]{width:100%;accent-color:var(--focus)}
+.calc select{width:100%;padding:8px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:2px}
+.calc output{float:right;font:700 1.2rem var(--display);color:var(--amber)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:2px}
+.res div{background:var(--black);color:#fff;padding:8px 10px;font:600 .95rem/1.2 var(--display);text-transform:uppercase}
+.res b{display:block;font-size:1.9rem;line-height:1.15;color:var(--gold)}
+ul.t{list-style:none;margin:6px 0;padding:0}ul.t li{position:relative;padding-left:18px;margin:3px 0}
+ul.t li::before{content:"";position:absolute;left:3px;top:.62em;width:8px;height:8px;background:var(--gold);box-shadow:0 0 0 1px var(--ink)}
+details{border:1.5px solid var(--ink);margin:10px 0;padding:0 12px}summary{cursor:pointer;padding:9px 0;font:700 1.1rem var(--display);text-transform:uppercase}
+.trait{display:inline-block;margin:0 0 8px;padding:3px 14px 2px;background:var(--gold);color:#17191c;font:700 1.1rem var(--display);text-transform:uppercase;clip-path:polygon(0 0,100% 0,100% 100%,6% 100%)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo"><div class="plate"><b>Fallout</b></div><span>O Jogo de RPG</span></div>
+<div class="chap"><em>★ Capítulo Três ★</em><h1>Atributos, perícias e origens</h1><p>Como funcionam os sete atributos S.P.E.C.I.A.L., as 17 perícias e o que cada origem muda na sua personagem.</p></div>
+</header>
+<nav aria-label="Seções"><ul><li><a href="#atr">Atributos</a></li><li><a href="#per">Perícias</a></li><li><a href="#teste">Como entram no teste</a></li><li><a href="#orig">Origens</a></li></ul></nav>
+<div class="page"><div class="body">
+
+<section id="atr">
+<h2>Atributos S.P.E.C.I.A.L.</h2>
+<p>Cada personagem é definida por sete atributos, que representam suas habilidades físicas e mentais e o jeito como ela prefere enfrentar problemas. Cada um tem um grau: quanto maior o número, maior a habilidade.</p>
+<ul class="t">
+<li>Atributos <b>não podem ficar abaixo de 4</b> nem ser aumentados além de <b>10</b>. Algumas criaturas e origens fogem desses limites.</li>
+<li>Todos começam em <b>5</b>. Você tem <b>5 pontos</b> para aumentá-los, 1 ponto por grau.</li>
+<li>Reduzir um atributo de 5 para 4 devolve 1 ponto para gastar em outro.</li>
+<li>Os atributos formam parte do número-alvo dos testes de perícia e entram na maioria das estatísticas derivadas.</li></ul>
+<h3>Os sete atributos</h3>
+<div class="grid" id="cards"></div>
+<div class="box"><span class="scr">Jogando Sorte</span><p>Sorte não é atributo padrão de nenhuma perícia, então parece que quase nunca é usada. Quando o sucesso depende mais do acaso que da habilidade, o mestre pode pedir Sorte no lugar de outro atributo. Você também pode trocar um atributo por Sorte gastando 1 Ponto de Sorte antes do teste, o que compensa se sua Sorte for maior.</p></div>
+<h3>Distribuições prontas</h3>
+<p class="hint">Valores já incluem os 5 pontos iniciais, em qualquer ordem, e não consideram a origem.</p>
+<div class="tw"><table><thead><tr><th>Estilo</th><th>Graus</th><th>Ideia</th></tr></thead><tbody>
+<tr><td>Equilibrada</td><td>6, 6, 6, 6, 6, 5, 5</td><td>Versatilidade</td></tr>
+<tr><td>Focada</td><td>8, 7, 6, 6, 5, 4, 4</td><td>Um ou dois pontos fortes</td></tr>
+<tr><td>Especializada</td><td>9, 8, 5, 5, 5, 4, 4</td><td>Máximo em uma tarefa</td></tr></tbody></table></div>
+</section>
+
+<section id="per">
+<h2>Perícias</h2>
+<p>As perícias são o que você aprendeu sobrevivendo nos Ermos. Cada uma tem um grau de <b>0 a 6</b>, e cada grau é um nível de treinamento. Você soma o grau da perícia a um atributo para obter o número-alvo do teste.</p>
+<ul class="t">
+<li>Todas começam em <b>grau 0</b>. Nenhuma passa de grau 6.</li>
+<li>Escolha <b>3 perícias Marcadas</b>, que começam em <b>grau 2</b>. Sua origem pode dar uma Marcada adicional.</li>
+<li>Distribua <b>9 + INT pontos de perícia</b>: cada ponto compra 1 grau em qualquer perícia.</li>
+<li>Na criação, nenhuma perícia passa do <b>grau 3</b>, a menos que a personagem comece no Nível 3 ou mais.</li></ul>
+<div class="box"><span class="scr">Perícias Marcadas</span><p>Representam treinamento especializado ou afinidade especial. Ao usá-las, <b>cada d20 que rolar um número menor ou igual ao grau da perícia é sucesso crítico</b> e vale 2 sucessos. Exemplo: Curie tem INT 7 e Medicina 3 (Marcada), número-alvo 10. Rola 3 e 14: o 14 falha, mas o 3 gera 2 sucessos.</p><p>Cada Marcada também dá um item inicial, listado em cada perícia abaixo.</p></div>
+<h3>As 17 perícias</h3>
+<p class="hint">O atributo padrão é o mais comum, mas o mestre pode pedir outro quando a situação mudar o que importa.</p>
+<div class="grid" id="skills"></div>
+</section>
+
+<section id="teste">
+<h2>Como os atributos entram no teste</h2>
+<p>O mestre escolhe um atributo e uma perícia. A soma <b>atributo + grau da perícia</b> é o <b>número-alvo</b>: cada d20 que rolar menor ou igual a ele é 1 sucesso. Você rola 2d20 (pode comprar até 3 a mais com Pontos de Ação) e precisa de sucessos iguais ou acima da dificuldade, de 1 a 5.</p>
+<ul class="t"><li>Um 1 é <b>sucesso crítico</b> e vale 2 sucessos. Em perícia <b>Marcada</b>, qualquer resultado até o grau da perícia é crítico.</li>
+<li>Um 20 gera uma <b>complicação</b>.</li>
+<li>Cada sucesso acima da dificuldade vira 1 Ponto de Ação.</li></ul>
+<h3>Simulador</h3>
+<div class="calc">
+<div><label for="a">Atributo <output id="ao"></output></label><input id="a" type="range" min="4" max="10" value="6"></div>
+<div><label for="r">Grau da perícia <output id="ro"></output></label><input id="r" type="range" min="0" max="6" value="1"></div>
+<div><label for="d">Dados</label><select id="d"><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+<div><label for="f">Dificuldade</label><select id="f"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
+<div><label><input id="m" type="checkbox"> Perícia Marcada (começa em grau 2)</label></div></div>
+<div class="res" aria-live="polite"><div>Número-alvo<b id="tn"></b></div><div>Sucesso por dado<b id="ps"></b></div><div>Crítico por dado<b id="pc"></b></div><div>Chance de passar<b id="pp"></b></div></div>
+</section>
+
+<section id="orig">
+<h2>Origens</h2>
+<p>A origem é o histórico da personagem: nascimento, educação, comunidade e modo de vida. Cada uma define os limites dos atributos e das perícias e dá um traço único. Escolha uma para ver como ela muda os atributos.</p>
+<div class="cards" id="obtn" role="group" aria-label="Origens"></div>
+<div id="odet" aria-live="polite"></div>
+</section>
+</div>
+<div class="pgfoot"><span>Fallout ★ O Jogo de RPG</span><span>Capítulo Três ★ Criação de personagem</span></div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const A=['FOR','PER','RES','CAR','INT','AGI','SOR'];
+const AT=[
+['Força','FOR','Proeza física. Usada em ataques corpo a corpo, aumenta o dano corpo a corpo e a carga que você leva.','Corpo a Corpo, Atletismo, Desarmado','Capacidade de Carga: 75 kg + FOR × 5. Dano corpo a corpo: FOR 7–8 dá +1 CD, 9–10 dá +2, 11+ dá +3.','Compre graus se quer resolver as coisas com brutalidade.'],
+['Percepção','PER','Quanto você nota o perigo e o ambiente. Define sua vez na ordem de combate e é usada com armas de energia.','Armas de Energia, Arrombamento, Explosivos, Pilotagem','Iniciativa: PER + AGI.','Compre graus se quer ser perspicaz e estudar o ambiente.'],
+['Resistência','RES','Vigor e resiliência naturais. Influencia pontos de vida, a facilidade de ignorar as intempéries dos Ermos e o uso de armas pesadas.','Armas Grandes, Sobrevivência','Pontos de vida: RES + SOR.','Compre graus se quer persistir até o fim.'],
+['Carisma','CAR','Capacidade de convencer, fazer a cabeça dos outros, negociar e se manter seguro em grupo.','Barganha, Retórica','Não entra em estatísticas derivadas.','Compre graus se quer resolver as coisas na lábia.'],
+['Inteligência','INT','Perspicácia, uso da mente para superar obstáculos e o quanto você lembra e assimila do mundo.','Ciências, Medicina, Reparo','Pontos de perícia na criação: 9 + INT.','Compre graus se quer ser astuto e achar a solução mais eficaz.'],
+['Agilidade','AGI','Atletismo, equilíbrio, flexibilidade e controle do corpo. Usada em ataques à distância com armas pequenas.','Armas Pequenas, Arremesso, Furtividade','Defesa: AGI 1–8 dá Defesa 1; AGI 9+ dá Defesa 2. Entra na Iniciativa.','Compre graus se quer precisão e habilidade.'],
+['Sorte','SOR','Quanto a fortuna está a seu favor. Concede Pontos de Sorte, gastos para acrescentar detalhes à história e rejogar dados.','Nenhuma (veja “Jogando Sorte”)','Pontos de vida: RES + SOR. Reserva de Pontos de Sorte.','Compre graus se quer que o acaso trabalhe para você.']];
+$('#cards').innerHTML=AT.map(a=>`<article class="card"><header><h4>${a[0]}</h4><b>${a[1]}</b></header><p>${a[2]}</p><p><em>Perícias padrão:</em> ${a[3]}</p><p><em>Estatísticas:</em> ${a[4]}</p><p class="hint">${a[5]}</p></article>`).join('');
+
+// perícias
+const PE=[
+['Armas Corpo a Corpo','FOR','Infligir dano e aparar golpes com armas corpo a corpo de uma e duas mãos: tacos, facas, tábuas, ferramentas e marretas.','AGI para aparar um ataque; CAR para ameaçar.','Machete ou bastão de beisebol.'],
+['Armas de Energia','PER','Disparar armas baseadas em energia: pistolas laser e de plasma, fuzil Gauss, fuzil de plasma, emissor de micro-ondas e mosquete laser.','INT para modificar e reparar a arma; AGI para desarmar armadilha que usa arma de energia.','Célula de energia com 6+3 CD disparos.'],
+['Armas Grandes','RES','Usar armas pesadas: miniguns, lança-foguetes, Fat Mans e lasers Gatling.','FOR para firmar a arma; AGI quando a precisão importa.','4+2 CD disparos de combustível de lança-chamas.'],
+['Armas Pequenas','AGI','Precisão e conhecimento prático de pistolas, fuzis e escopetas, de tiro único ou automáticos.','CAR para intimidar apontando a arma; RES para manter a mira por muito tempo.','6+3 CD munições do tipo de arma que você já tem.'],
+['Arremesso','AGI','Ataques com armas de arremesso: azagaias, facas e armas improvisadas.','FOR com objetos pesados; PER para medir a distância.','4+2 CD facas de arremesso ou 2+1 CD tomahawks.'],
+['Arrombamento','PER','Manipular fechaduras físicas e abri-las sem chave, inclusive cofres e portas trancadas.','AGI ou FOR para forçar uma porta sem destravar a fechadura.','4+2 CD grampos de cabelo.'],
+['Atletismo','FOR','Aplicar força e agilidade, conhecer seus limites e se concentrar no esforço: empurrar, puxar, levantar, pular, escalar, nadar e correr.','AGI ou RES diante de adversidades físicas.','Roupas casuais e 1 buffout.'],
+['Barganha','CAR','Lidar com dinheiro: comprar e vender itens, ou negociar o custo de um serviço.','PER para ver se alguém aceita mudar as exigências; INT para saber o preço verdadeiro de algo.','2d20 tampas adicionais.'],
+['Ciências','INT','Conhecimento acadêmico e empírico, aplicado nos Ermos para hackear computadores, programar robôs e preparar narcos.','PER para observar um objeto de estudo; CAR para convencer com conhecimento científico.','Jaleco e 1 dose de mentat.'],
+['Desarmado','FOR','Lutar com o próprio corpo, fazendo ataques desarmados em combate.','AGI; CAR para ameaçar ou intimidar.','Soqueiras.'],
+['Explosivos','PER','Arremessar, instalar como armadilha ou detonar remotamente: granadas, coquetéis Molotov, minas e dinamite.','FOR para arremessar granada longe; AGI para se aproximar de uma mina sem detoná-la.','2 coquetéis Molotov ou 2 bolas de beisebol explosivas.'],
+['Furtividade','AGI','Movimentos furtivos e qualquer ação física para não ser notado: andar em silêncio e ficar escondido.','PER para achar inimigos em emboscada; INT para inspecionar um edifício.','1 dose de calmex.'],
+['Medicina','INT','Aplicações e conhecimentos médicos: primeiros socorros, farmacologia, cirurgia e cura de envenenamento por radiação. Estabiliza companheiros em combate.','AGI para cirurgia; CAR para aconselhar um companheiro.','1 kit de primeiros socorros e 1 stimpak.'],
+['Pilotagem','PER','Operar veículos terrestres (buggies, motocicletas, tanques) e voadores (vertibirds).','FOR para manter o controle numa derrapagem; AGI para pousar um vertibird em zona estreita.','Peças de carro quebrado (equivalem a 5 sucatas comuns).'],
+['Reparo','INT','Construir e reparar itens, de armas e edifícios a armadilhas e mecanismos complexos: modificar armas, consertar robôs, criar itens do zero e montar defesas.','FOR para fazer maquinário pesado voltar a funcionar; PER para investigar problema num motor.','Multiferramenta.'],
+['Retórica','CAR','Técnicas de comunicação: convencer com argumentos, inspirar, ou mentir sem ser pego.','INT para escrever um discurso; PER para descobrir quão suscetível o alvo é à sua mentira.','Chapéu formal e roupas formais.'],
+['Sobrevivência','RES','Viver nos Ermos: caçar, forragear, pescar, cozinhar, fazer abrigos, acender fogueiras e resistir a desnutrição e desidratação.','PER para estimar quanto tempo resta até o anoitecer; CAR para domar animais.','2 águas purificadas e 1 iguana no palito.']];
+$('#skills').innerHTML=PE.map(a=>`<article class="card"><header><h4>${a[0]}</h4><b>${a[1]}</b></header><p>${a[2]}</p><p><em>Outros atributos:</em> ${a[3]}</p><p class="hint"><em>Item se Marcada:</em> ${a[4]}</p></article>`).join('');
+
+// simulador
+function chance(tn,rk,tag,n,df){const m=Math.min(Math.max(tn,0),20),c=Math.min(tag?rk:1,m)/20,s=m/20-c;let d=[1];
+ for(let i=0;i<n;i++){const x=Array(d.length+2).fill(0);d.forEach((p,k)=>{x[k]+=p*(1-m/20);x[k+1]+=p*s;x[k+2]+=p*c});d=x}
+ return{s:s,c:c,p:d.slice(df).reduce((a,b)=>a+b,0)}}
+function calc(){let rk=+$('#r').value;const tag=$('#m').checked;if(tag&&rk<2){rk=2;$('#r').value=2}
+ const at=+$('#a').value,tn=at+rk,r=chance(tn,rk,tag,+$('#d').value,+$('#f').value),pc=x=>Math.round(x*100)+'%';
+ $('#ao').textContent=at;$('#ro').textContent=rk;$('#tn').textContent=tn;$('#ps').textContent=pc(r.s+r.c);$('#pc').textContent=pc(r.c);$('#pp').textContent=pc(r.p)}
+['a','r','d','f','m'].forEach(i=>$('#'+i).addEventListener('input',calc));calc();
+
+// origens
+const AP=[['Emissor de Laser','Corta objetos ou ataca à distância como uma pistola laser.'],['Lança-Chamas','Incendeia objetos, cozinha ou ataca à distância, em curto alcance.'],['Pinça','Pega objetos de até 20 kg e faz ataques desarmados (2 CD de dano Físico).'],['Pistola 10mm Automática','Ataques à distância com pistola 10mm automática.'],['Serra-Circular','Corta objetos ou ataca corpo a corpo: 3 CD de dano Físico, Perfurante 1.']];
+const TR=[['Instruído','Uma perícia Marcada adicional.','Falhar em perícia não Marcada dá 1 PA ao mestre.'],['Tiro Rápido','Segunda ação maior em ataque à distância custa 1 PA, em vez de 2.','Não pode usar a ação menor Mirar.'],['Dotado','+1 em dois atributos à sua escolha.','Máximo de Pontos de Sorte = Sorte − 1.'],['Mão Pesada','+1 CD no dano corpo a corpo.','Complicação em 19–20 no corpo a corpo e desarmado.'],['Esguio','Rejoga 1d20 em testes de AGI de equilíbrio ou contorção.','Carga = 75 + (2,5 × FOR) kg, em vez de 5 × FOR.']];
+const O=[
+{k:'ir',n:'Iniciado da Irmandade do Aço',tr:'A Corrente que Une',lim:'Sem alteração nos limites.',base:{},max:{},
+ h:'<p>A Irmandade do Aço nasceu das revelações da Rebelião Mariposa, fundada por Roger Maxson para dar ao seu povo algo em que acreditar. Tem mito, credo e hierarquia próprios e busca recuperar e preservar a tecnologia do Pré-Guerra. Você pode descender de um cavaleiro ou paladino, ou ser um recruta novo subindo nas fileiras.</p><p>Os capítulos não são tão unidos quanto parecem. A Costa Oeste guerreou com a Nova República da Califórnia pela tecnologia, enquanto a Costa Leste priorizou a caridade, até Arthur Maxson expandir a influência de Washington, D.C. por todo o litoral e voltar ao desenvolvimento tecnológico.</p>',
+ t:'<p>Você ganha uma perícia Marcada adicional, que deve ser <b>Armas de Energia, Ciências ou Reparo</b>.</p><p>Você está preso à cadeia de comando: deve cumprir as ordens dos superiores imediatos e responde pelos irmãos subordinados. Se falhar no dever, é expulso da Irmandade e sua tecnologia é reivindicada, por bem ou por mal.</p>'},
+{k:'ne',n:'Necrótico',tr:'Pós-Humano Necrótico',lim:'Sem alteração nos limites.',base:{},max:{},
+ h:'<p>A radiação gama que sobrou da Grande Guerra pode mutar humanos. Você é um desses mutantes: seu corpo virou um cadáver vivo e apodrecido, com a pele se soltando da carne mas sustentada pelo metabolismo mutante. Pode ter nascido depois da guerra, ter vindo do Refúgio 12 em Bakersfield, cuja porta não fechou, ou morar num assentamento de necróticos como o Submundo.</p><p>Necróticos civilizados temem degenerar em feral: mutantes que perderam as funções cerebrais superiores e atacam todo mundo para defender território ou se alimentar.</p>',
+ t:'<p>Você é <b>imune a dano Radiativo</b> e recupera 1 PV para cada 3 de dano Radiativo sofrido. Ao descansar em local irradiado, rejoga sua reserva de dados na verificação de cura de ferimentos.</p><p><b>Sobrevivência</b> vira perícia Marcada (+2 graus).</p><p>Você envelhece muito devagar (pode até ter vivido a Grande Guerra de 2077), mas é estéril. Pode sofrer discriminação dos peles-lisas: aumenta a dificuldade ou o intervalo de complicação em testes de Carisma, conforme as crenças do oponente.</p>'},
+{k:'sm',n:'Supermutante',tr:'Evolução Forçada',lim:'FOR e RES começam em 7 (máx. 12). INT e CAR máx. 6. Perícias com grau máx. 4.',base:{FOR:7,RES:7},max:{FOR:12,RES:12,INT:6,CAR:6},
+ h:'<p>Humano mutante e brutal, forçado a evoluir por experimentos mal planejados. Infectado com o FEV (vírus da evolução forçada), seu corpo virou uma máquina de matar com mais de dois metros, volumosa e musculosa, de pele verde, amarela ou cinza. Não envelhece, mas é estéril.</p><p>As linhagens possíveis: o exército do Mestre em Mariposa, o Programa de Experimentação Evolutiva do Refúgio 87, sequestrados da Comunidade e expostos ao FEV pelo Instituto, ou os moradores de Huntersville, nos Apalaches, cuja água foi contaminada. Os grupos de cada linhagem não se misturaram.</p>',
+ t:'<p>FOR e RES iniciais sobem 2 cada, e o máximo dos dois chega a 12. INT e CAR não passam de 6, e suas perícias têm grau máximo 4.</p><p>Você é <b>completamente imune a dano Radiativo e Venenoso</b>, mas só pode usar armadura feita para supermutantes.</p>'},
+{k:'mh',n:'Mr. Handy',tr:'Robô Mr. Handy',lim:'Sem alteração nos atributos. Carga fixa de 75 kg.',base:{},max:{},
+ h:'<p>Robô doméstico da General Atomics International em colaboração com a RobCo, produzido entre 2037 e 2077 para dar a cada lar americano a servidão de um mordomo. Com programação de ponta, tem iniciativa e adapta seu próprio código; foi isso que o fez sobreviver além da Grande Guerra e se soltar dos grilhões da programação.</p><p>Você pode ser de qualquer série: Mr. Handy, Mr. Gutsy, Miss Nanny ou Mr. Orderly. Funciona com bateria nuclear, troca seu combustível e conserta a si mesmo e a outras unidades dessa origem. Tem três braços mecânicos, três olhos em hastes e flutua por propulsão a jato.</p>',
+ t:'<p>Visão 360° e sensores que detectam cheiros, químicos e radiação: dificuldade −1 em testes de Percepção ligados a visão e olfato. Imune a dano Radiativo e Venenoso, mas <b>não usa narcos</b> e não se beneficia de comida, bebida ou descanso.</p><p>Paira sobre o terreno, sem sofrer com terreno difícil. Carga de 75 kg, que não aumenta com Força nem vantagens (só com armadura modificada). Só recupera PV com reparos.</p><p>Você tem <b>três apêndices de braço</b>, definidos pelo pacote de equipamento; braço com arma dá 20 munições. Sem pinça, você não faz ataques desarmados, não manipula objetos e não faz testes de Arremesso, Arrombamento ou Reparo.</p><details><summary>Apêndices de braço</summary><div class="tw"><table><thead><tr><th>Apêndice</th><th>Efeito</th></tr></thead><tbody>'+AP.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td></tr>`).join('')+'</tbody></table></div></details><details><summary>Áreas de acerto (1d20)</summary><div class="tw"><table><thead><tr><th>1d20</th><th>Área</th></tr></thead><tbody><tr><td>1–2</td><td>Óticos (conta como Cabeça)</td></tr><tr><td>3–8</td><td>Corpo principal (Tronco)</td></tr><tr><td>9–11</td><td>Braço 1</td></tr><tr><td>12–14</td><td>Braço 2</td></tr><tr><td>15–17</td><td>Braço 3</td></tr><tr><td>18–20</td><td>Propulsor (Perna)</td></tr></tbody></table></div></details>'},
+{k:'sv',n:'Sobrevivente',tr:'Dois traços à escolha',lim:'Sem alteração nos limites, exceto por Dotado.',base:{},max:{},
+ h:'<p>Legado vivo de quem se preparou por conta própria para o Armagedom: seus antepassados cavaram, sobreviveram e acharam comunidade suficiente para a humanidade continuar. Pode vir de assentamentos, abrigos isolados ou grupos de viajantes, da Nova República da Califórnia (herdeira do Refúgio 15 e de Shady Sands), dos Minutemen ou dos Reguladores, ou ser invasor reformado.</p><p>Sobreviventes desconfiam de estranhos e viajam pouco; as caravanas costumam circular dentro de sua região, não de costa a costa.</p>',
+ t:'<p>Escolha <b>dois traços</b>, ou um traço e uma vantagem adicional. Cada traço traz um benefício e, às vezes, uma penalidade.</p><div class="tw"><table><thead><tr><th>Traço</th><th>Benefício</th><th>Penalidade</th></tr></thead><tbody>'+TR.map(x=>`<tr><td><b>${x[0]}</b></td><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('')+'</tbody></table></div>'},
+{k:'rf',n:'Habitante do Refúgio',tr:'Cria de Refúgio',lim:'Sem alteração nos limites.',base:{},max:{},
+ h:'<p>Quando as bombas caíram, você ou seus antepassados estavam em uma das 122 instalações da Vault-Tec, sob rocha e portas anti-explosão. A família comprou o lugar ou foi sorteada, talvez só para virar cobaia de experimentos imorais. Você está livre de mutações e doenças, mas o refúgio manipulou sua visão de mundo e seu comportamento, o que te distingue dos sobreviventes da superfície.</p><p>Muitos refúgios faltaram suprimentos e abriram as portas. O exemplo notável é o Refúgio 15, cujos moradores fundaram Shady Sands e deram origem aos bandos de invasores Chacais, Víboras e Khans.</p>',
+ t:'<p>Dificuldade −1 (mínimo 0) em testes de RES para resistir a doenças, e uma <b>perícia Marcada adicional</b> à sua escolha.</p><p>Com o mestre, defina o experimento do seu refúgio. Uma vez por missão, o mestre pode criar uma complicação ligada a ele ou ao isolamento de sua infância; se o fizer, você recupera 1 Ponto de Sorte.</p><p><b>Necrótico:</b> com a permissão do mestre, seu habitante pode ser necrótico. Ele ganha Pós-Humano Necrótico em vez de Cria de Refúgio e pode usar os pacotes de equipamento de Habitante do Refúgio em vez de um de Ermante.</p>'}];
+let cur=0;
+function origem(i){cur=i;const o=O[i];
+ $('#obtn').innerHTML=O.map((x,j)=>`<button data-i="${j}" aria-pressed="${j==i}">${x.n}</button>`).join('');
+ const sp=A.map(a=>{const b=o.base[a]||5,m=o.max[a]||10;return `<div><span class="lb">${a}</span><b>${b}</b><small>máx. ${m}</small></div>`}).join('');
+ $('#odet').innerHTML=`<h3>${o.n}</h3>${o.h}<span class="trait">Traço: ${o.tr}</span>${o.t}<h3>Limites dos atributos</h3><div class="spec" role="img" aria-label="Valor inicial e máximo de cada atributo">${sp}</div><p class="hint">${o.lim} Valor inicial em destaque e máximo abaixo; os 5 pontos da criação ainda se somam ao inicial.</p>`}
+$('#obtn').addEventListener('click',e=>{const b=e.target.closest('button');if(b)origem(+b.dataset.i)});
+origem(0);
+
+// aba ativa
+const tabs=[...document.querySelectorAll('nav a')];
+function spy(){const y=innerHeight*.35;let c=0;document.querySelectorAll('section').forEach((s,i)=>{if(s.getBoundingClientRect().top<y)c=i});tabs.forEach((t,i)=>t.setAttribute('aria-current',i==c))}
+addEventListener('scroll',spy,{passive:true});spy();
+</script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Criador de Personagem - Fallout RPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700;1,8..60,400&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+:root{
+--display:'Barlow Condensed','Arial Narrow','Franklin Gothic Medium',Arial,sans-serif;
+--serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+--script:'Yellowtail','Brush Script MT','Segoe Script',cursive;
+--bg1:#2f629c;--bg2:#12325a;
+--paper:#fdfcf8;--ink:#17191c;--mut:#4b5460;--hair:#d3d5d7;
+--black:#121416;--gold:#f2b925;--amber:#8a5d00;--note:#fbefb4;--cream:#f6e7a3;--soft:#faf3d2;
+--bad:#a62d18;--ok:#1d6a47;--focus:#17385f;--tab:#66707b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#1c3b60;--bg2:#09162a;--paper:#162233;--ink:#eaeef3;--mut:#a9b5c4;--hair:#33465f;--black:#070b11;--amber:#f2b925;--note:#3b3718;--cream:#2c3d56;--soft:#1d2c42;--bad:#ff9d87;--ok:#79d6a6;--focus:#f2b925;--tab:#9eacbd}}
+:root[data-theme="dark"]{--bg1:#1c3b60;--bg2:#09162a;--paper:#162233;--ink:#eaeef3;--mut:#a9b5c4;--hair:#33465f;--black:#070b11;--amber:#f2b925;--note:#3b3718;--cream:#2c3d56;--soft:#1d2c42;--bad:#ff9d87;--ok:#79d6a6;--focus:#f2b925;--tab:#9eacbd}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font:400 16px/1.6 var(--serif);
+background:
+radial-gradient(110% 70% at 50% -10%,rgba(255,255,255,.14),transparent 62%),
+repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 1px,transparent 1px 4px),
+repeating-linear-gradient(-45deg,rgba(0,0,0,.06) 0 1px,transparent 1px 4px),
+linear-gradient(180deg,var(--bg1),var(--bg2));background-attachment:fixed}
+
+/* cabeçalho: placa do logotipo + abertura de capítulo */
+header{max-width:1100px;margin:0 auto;padding:26px 16px 22px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;color:#fff}
+.logo{text-align:center}
+.plate{display:inline-block;transform:skewX(-7deg);padding:2px 26px 4px;border:3px solid #e3e8ed;border-radius:9px;background:linear-gradient(180deg,#27548a,#17375f);box-shadow:inset 0 0 0 2px #0d2341,0 0 0 1px #6f7e8e,0 8px 20px rgba(0,0,0,.4)}
+.plate b{display:block;transform:skewX(7deg);font:800 italic 3.4rem/1.05 var(--display);letter-spacing:-.01em;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.logo span{display:block;margin-top:8px;font:700 1.05rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.chap{text-align:right;margin-left:auto}
+.chap em{font:italic 400 1rem var(--serif);color:#f4d36b}
+header h1{margin:2px 0 4px;font:700 clamp(2.2rem,6.4vw,3.5rem)/.98 var(--display);text-transform:uppercase;letter-spacing:.005em;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.45)}
+.chap p{margin:0;max-width:34em;margin-left:auto;font-size:.95rem;color:#dbe6f2}
+@media(max-width:620px){header{justify-content:center;flex-direction:column;align-items:center}.chap{text-align:center;margin:0}.chap p{margin:0 auto}}
+
+/* abas de etapa, como a faixa superior das páginas do livro */
+#tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);box-shadow:0 2px 0 var(--black)}
+#tabs ul{position:relative;list-style:none;margin:0 auto;padding:0 16px;max-width:1100px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+#tabs ul::-webkit-scrollbar{display:none}
+#tabs a{display:block;padding:11px 14px 9px;font:700 .86rem/1 var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--tab);text-decoration:none;white-space:nowrap}
+#tabs a:hover{color:var(--ink)}
+#tabs a[aria-current="true"]{background:var(--gold);color:#17191c;clip-path:polygon(0 0,100% 0,100% 74%,86% 100%,0 100%)}
+
+main{display:grid;gap:22px;max-width:1100px;margin:0 auto;padding:22px 16px 48px}
+@media(min-width:900px){main{grid-template-columns:minmax(0,1fr) 360px;align-items:start}
+#sheet{position:sticky;top:calc(env(safe-area-inset-top,0px) + 60px);max-height:calc(100vh - 76px);overflow:auto}}
+
+/* a "página" do livro */
+.page{background:var(--paper);box-shadow:0 12px 32px rgba(0,0,0,.4);min-width:0}
+#steps{padding:6px 30px 8px}
+#steps section{padding:22px 0 18px;scroll-margin-top:60px}
+h2{margin:0 0 8px;padding-top:6px;border-top:2px solid var(--ink);font:700 1.6rem/1.08 var(--display);text-transform:uppercase;letter-spacing:.005em}
+h3{margin:16px 0 4px;padding-top:4px;border-top:2px solid var(--ink);font:700 1.1rem/1.1 var(--display);text-transform:uppercase}
+.hint{color:var(--mut);font-size:.92rem;margin:0 0 12px;max-width:62ch}
+.pgfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--black);color:#fff;padding:12px 24px;font:italic 700 .95rem/1.2 var(--display);letter-spacing:.02em}
+.pgfoot span:last-child{color:var(--gold)}
+
+/* controles */
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:2px;padding:6px 12px;min-height:38px;font-family:var(--display);font-weight:600;font-size:1.02rem;letter-spacing:.03em;text-transform:uppercase;line-height:1.1}
+button:hover{background:var(--gold);color:#17191c;border-color:var(--ink)}
+button.on{background:var(--black);color:var(--gold);border-color:var(--black);box-shadow:inset 5px 0 0 var(--gold)}
+button.on:hover{background:var(--black);color:var(--gold)}
+button:disabled{opacity:.38;cursor:not-allowed;background:transparent;color:var(--ink)}
+button.on:disabled{background:var(--black);color:var(--gold)}
+button.pri{background:var(--black);color:var(--gold);border-color:var(--black)}
+button.pri:hover{background:var(--gold);color:#17191c;border-color:var(--black)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.cards{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}
+.cards button{text-align:left;padding:10px 12px;min-height:52px}
+.cards button.on{padding-left:18px}
+section>label{display:flex;gap:10px;align-items:flex-start;margin:10px 0;font-size:.95rem}
+input[type=checkbox]{accent-color:var(--focus);width:18px;height:18px;margin:2px 0 0;flex:none}
+input[type=text],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--ink);border-radius:2px;background:var(--paper);color:var(--ink)}
+
+/* caixa amarela do livro ("Jogando Sorte") */
+.box{margin:14px 0;padding:12px 18px 14px;background:var(--note);font-size:.95rem;line-height:1.55;clip-path:polygon(0 2%,1.5% 0,60% 1.2%,100% 0,99.3% 55%,100% 100%,40% 98.8%,0 100%);box-shadow:inset 0 0 0 2px var(--gold)}
+.scr{display:block;margin-bottom:2px;font:400 1.7rem/1.15 var(--script);color:var(--amber)}
+
+/* atributos e perícias */
+.row{display:flex;align-items:center;gap:10px;padding:6px 10px;border-bottom:1px solid var(--hair)}
+.row:nth-of-type(odd){background:var(--soft)}
+.row .n,.sk label span{flex:1;font:700 1.12rem/1.15 var(--display);text-transform:uppercase;letter-spacing:.01em}
+.row small{font:400 .84rem/1.3 var(--serif);text-transform:none;letter-spacing:0;color:var(--mut)}
+.row b{min-width:2.1em;padding:1px 0;text-align:center;font:700 1.4rem/1.25 var(--display);background:var(--black);color:var(--gold)}
+.row button{width:38px;padding:0;font-size:1.25rem}
+.sk label{flex:1;display:flex;gap:10px;align-items:center}
+.perk{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px 10px 38px;position:relative;text-transform:none}
+.perk::before{content:"";position:absolute;left:14px;top:15px;width:11px;height:11px;border:2px solid var(--ink)}
+.perk.on::before{background:var(--gold);border-color:var(--gold)}
+.perk b{font:700 1.12rem/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.perk small{display:block;margin-top:2px;font:400 .88rem/1.4 var(--serif);text-transform:none;letter-spacing:0;opacity:.9}
+.perk.no,.perk.no:disabled{opacity:.55}
+.pts{font:700 1.02rem var(--display);letter-spacing:.03em;text-transform:uppercase}
+.bad{color:var(--bad)}.ok{color:var(--ok)}
+.act{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+/* ficha lateral */
+#sheet{background:var(--paper);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.shead{background:var(--black);color:#fff;padding:14px 18px 12px;border-bottom:4px solid var(--gold)}
+.shead h2{margin:0;padding:0;border:0;font-size:2rem;color:#fff;overflow-wrap:anywhere}
+.shead .sub{font:italic 400 .95rem var(--serif);color:var(--gold)}
+.sbody{padding:14px 18px 18px}
+.spec{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}
+.spec div{min-width:0}
+.spec .lb{display:block;padding:3px 0;background:var(--black);color:#fff;font:700 .82rem/1.2 var(--display);letter-spacing:.04em}
+.spec b{display:block;padding:2px 0;background:var(--cream);font:700 1.55rem/1.25 var(--display)}
+.spec div+div{border-left:1px solid var(--paper)}
+#sheet dl{margin:0}
+#sheet dl>div{display:flex;justify-content:space-between;gap:10px;padding:4px 8px}
+#sheet dl>div:nth-child(odd){background:var(--soft)}
+#sheet dt{font:600 1rem/1.3 var(--display);text-transform:uppercase;letter-spacing:.02em}
+#sheet dd{margin:0;font-weight:700}
+ul.t{list-style:none;margin:6px 0;padding:0}
+ul.t li{position:relative;padding-left:18px;margin:2px 0}
+ul.t li::before{content:"";position:absolute;left:3px;top:.62em;width:8px;height:8px;background:var(--gold);box-shadow:0 0 0 1px var(--ink)}
+.box.warn{margin:16px 0 4px}.box.warn li::before{background:var(--bad);box-shadow:none}
+#msg{margin:6px 0 0}
+
+@media(max-width:600px){#steps{padding:4px 16px 6px}.pgfoot{padding:12px 16px}}
+@media print{body{background:#fff}header,#tabs,.page,.act,#msg{display:none}main{display:block;padding:0}
+#sheet{position:static;box-shadow:none;max-height:none;overflow:visible}
+.shead,.spec .lb,.spec b,#sheet dl>div,.row b{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo"><div class="plate"><b>Fallout</b></div><span>O Jogo de RPG</span></div>
+<div class="chap"><em>★ Capítulo Três ★</em><h1>Criação de personagem</h1><p>Siga as 6 etapas do Capítulo 3 do livro de regras. Depois suba de nível e monte o inventário.</p></div>
+</header>
+<nav id="tabs" aria-label="Etapas"><ul>
+<li><a href="#s1">Origem</a></li><li><a href="#s2">Atributos</a></li><li><a href="#s3">Perícias</a></li><li><a href="#s4">Vantagem</a></li><li><a href="#s5">Equipamento</a></li><li><a href="#s6">Identidade</a></li><li><a href="#s7">Nível</a></li><li><a href="#s8">Inventário</a></li>
+</ul></nav>
+<main>
+<div class="page"><div id="steps"></div><div class="pgfoot"><span>Fallout ★ O Jogo de RPG</span><span>Capítulo Três ★ Criação de personagem</span></div></div>
+<aside id="sheet" aria-live="polite"></aside>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const A=['FOR','PER','RES','CAR','INT','AGI','SOR'],AN={FOR:'Força',PER:'Percepção',RES:'Resistência',CAR:'Carisma',INT:'Inteligência',AGI:'Agilidade',SOR:'Sorte'};
+const SK=[['Armas Corpo a Corpo','FOR'],['Armas de Energia','PER'],['Armas Grandes','RES'],['Armas Pequenas','AGI'],['Arremesso','AGI'],['Arrombamento','PER'],['Atletismo','FOR'],['Barganha','CAR'],['Ciências','INT'],['Desarmado','FOR'],['Explosivos','PER'],['Furtividade','AGI'],['Medicina','INT'],['Pilotagem','PER'],['Reparo','INT'],['Retórica','CAR'],['Sobrevivência','RES']];
+const TRAITS={'Instruído':'+1 perícia Marcada. Penalidade: falhar em perícia não Marcada dá 1 PA ao mestre.','Tiro Rápido':'2ª ação maior em ataque à distância custa 1 PA (em vez de 2). Não pode usar Mirar.','Dotado':'+1 em dois atributos. Máx. de Pontos de Sorte = Sorte − 1.','Mão Pesada':'+1 CD no dano corpo a corpo. Complicação em 19–20 no corpo a corpo e desarmado.','Esguio':'Rejoga 1d20 em AGI de equilíbrio/contorção. Carga = 75 + 2,5×FOR.','Vantagem adicional':'Uma vantagem extra em vez de um segundo traço.'};
+const O={
+iniciado:{n:'Iniciado da Irmandade do Aço',t:'A Corrente que Une: ganha uma perícia Marcada adicional, que deve ser Armas de Energia, Ciências ou Reparo. Você segue a cadeia de comando e responde por seus subordinados.',pk:'ir'},
+necro:{n:'Necrótico',t:'Pós-Humano Necrótico: imune a dano Radiativo (cura 1 PV a cada 3 de dano Radiativo). Sobrevivência vira perícia Marcada. Estéril, envelhece devagar; sofre discriminação dos peles-lisas.',pk:'er'},
+super:{n:'Supermutante',t:'Evolução Forçada: FOR e RES iniciais +2 (máx. 12). INT e CAR máx. 6. Perícias com grau máx. 4. Imune a dano Radiativo e Venenoso. Só usa armadura feita para supermutantes.',base:{FOR:7,RES:7},max:{FOR:12,RES:12,INT:6,CAR:6},pk:'sm'},
+handy:{n:'Mr. Handy',t:'Robô Mr. Handy: visão 360° (Percepção de visão/olfato −1 dificuldade), imune a dano Radiativo e Venenoso, sem narcos, comida ou descanso. Voa sobre o terreno. Carga fixa de 75 kg. Cura só com reparos. Tem 3 apêndices de braço pelo pacote.',pk:'mh'},
+sobrev:{n:'Sobrevivente',t:'Escolha dois traços abaixo, ou um traço e uma vantagem adicional.',pk:'er'},
+vault:{n:'Habitante do Refúgio',t:'Cria de Refúgio: dificuldade −1 em RES contra doenças e uma perícia Marcada adicional à sua escolha. Uma vez por missão o mestre pode criar uma complicação ligada ao seu refúgio (você ganha 1 Ponto de Sorte).',pk:'rf'}};
+const NOMEPK={ir:['Iniciado da Irmandade do Aço','Escriba da Irmandade do Aço'],er:['Mercenário','Invasor','Colono','Comerciante','Viajante'],sm:['Brutamontes','Escaramuçador'],mh:['Miss Nanny','Mr. Farmhand','Mr. Gutsy','Mr. Handy','Nurse Handy'],rf:['Residente da Vault-Tec','Segurança da Vault-Tec']};
+const PKG={
+'Iniciado da Irmandade do Aço':'Farda e capuz da Irmandade; faca de combate; pistola laser + célula de fusão (10+5 CD disparos) OU pistola 10mm (10+5 CD cartuchos); holotags',
+'Escriba da Irmandade do Aço':'Armadura de campo e chapéu do escriba; faca de combate; pistola laser + célula (6+3 CD) OU pistola 10mm (6+3 CD); holotags',
+'Mercenário':'Roupas rígidas; peitoral de couro OU braço + perna de couro; corpo a corpo (machete, bastão de beisebol ou ferro de roda); arma à distância (pistola 10mm automática, .44, fuzil de caça ou pistola de tubo de ferrolho) + 10+5 CD munições; nota de trabalho (50 tampas); 15 tampas',
+'Invasor':'Arnês; peitoral + 1 braço de invasor; corpo a corpo (cano de chumbo, taco de bilhar ou ferro de roda); pistola de tubo + 10+5 CD .38; jet OU radaway; coquetel Molotov OU stimpak; 15 tampas',
+'Colono':'Roupas rígidas; corpo a corpo (canivete, chave grifo, rolo de massa ou soqueiras); pistola de tubo + 6+3 CD .38; 2 jogadas em Comida Aleatória; bugiganga; 45 tampas',
+'Comerciante':'Roupas rígidas; peitoral de couro OU braço + perna de couro; pistola de tubo + 8+4 CD .38; bugiganga; produtos (3 jogadas em Munição, Narcos e Curiosidades aleatórios); brahmin de carga; 50 tampas',
+'Viajante':'Roupa de Errante; corpo a corpo (canivete, chave grifo, rolo de massa ou soqueiras); pistola de tubo + 8+4 CD .38; jet OU radaway; bugiganga; 30 tampas',
+'Brutamontes':'Peitoral + perna OU braço de invasor; fuzil de tubo + 6+3 CD .38; bastão de beisebol OU machete; bugiganga; 5 tampas',
+'Escaramuçador':'Peitoral + perna OU braço de invasor; fuzil de tubo longo + 8+4 CD .308; tábua; bugiganga; 5 tampas',
+'Miss Nanny':'Apêndices: pinça, lança-chamas e um à escolha; revestimento padrão; mod de Análise Comportamental; mod de Detecção de Perigos; 10 tampas',
+'Mr. Farmhand':'Apêndices: pinça, serra-circular e emissor de laser; revestimento padrão; saco de fertilizante; 2 frutantes; 25 tampas',
+'Mr. Gutsy':'Apêndices: pistola 10mm automática, serra-circular e emissor de laser (+20 munições da arma); revestimento Mr. Gutsy; mod de Sensores de Reconhecimento; 10 tampas',
+'Mr. Handy':'Apêndices: pinça, lança-chamas e serra-circular; revestimento padrão; kit de reparo de robôs; mod de Caldeira Integrada; 10 tampas',
+'Nurse Handy':'Apêndices: pinça ou serra-circular, serra-circular e um à escolha; revestimento padrão; stimpak; mod de Diagnóstico; 10 tampas',
+'Residente da Vault-Tec':'Macacão do refúgio; cantil da Vault-Tec (1 água purificada); Pip-Boy; canivete; pistola 10mm + 6+3 CD; 2 stimpaks; 10 tampas',
+'Segurança da Vault-Tec':'Macacão do refúgio; armadura e capacete de segurança; cantil (1 água purificada); Pip-Boy; cassetete; pistola 10mm + 8+4 CD; 1 stimpak'};
+const TAGI={'Atletismo':'Roupas casuais, 1 buffout','Barganha':'2d20 tampas adicionais','Armas Grandes':'4+2 CD de combustível de lança-chamas','Armas de Energia':'Célula de energia (6+3 CD disparos)','Explosivos':'2 coquetéis Molotov OU 2 bolas de beisebol explosivas','Arrombamento':'4+2 CD grampos de cabelo','Medicina':'Kit de primeiros socorros, 1 stimpak','Armas Corpo a Corpo':'Machete OU bastão de beisebol','Pilotagem':'Peças de carro quebrado (5 sucatas comuns)','Reparo':'Multiferramenta','Ciências':'Jaleco, 1 dose de mentat','Armas Pequenas':'+6+3 CD munições do tipo que já possui','Furtividade':'1 dose de calmex','Retórica':'Chapéu e roupas formais','Sobrevivência':'2 águas purificadas, 1 iguana no palito','Arremesso':'4+2 CD facas de arremesso OU 2+1 CD tomahawks','Desarmado':'Soqueiras'};
+const BUG=['Relógio de bolso dourado','Holodisco com mensagem truncada','Bandana colorida','Medalhão de prata','Medalha','Planta em vaso','Ingressos de evento do Pré-Guerra','Aliança de casamento','Convite para festa do Pré-Guerra','Isqueiro flip gravado','Dados de cassino viciados','Documento de identidade','Estojo de produtos de beleza','Instrumento musical','Óculos quebrados','Colar feito de sucata','Páginas de uma história inacabada','Livro de biblioteca em atraso','Cartão postal com um endereço','Gravata do Pré-Guerra'];
+const P=[['Alvo em Movimento','AGI6','Ao Correr, Defesa +1 até o próximo turno'],['Amigo dos Animais','CAR6','Animais podem optar por não atacar você'],['Aquático','RES5','Sem dano Radiativo ao nadar; prende o fôlego 2x'],['Armeiro','FOR5 INT6','Modifica armaduras (mods de grau 1)'],['Arrasa-Corações / Viúva-Negra','CAR6','Rejoga 1d20 em CAR e +1 CD de dano contra o gênero escolhido'],['Bater Carteira','PER8 AGI8','Ignora a 1ª complicação ao roubar ou plantar itens'],['Blitz','AGI9','Rejoga 1d20 no corpo a corpo após se mover'],['Bom de Papo','CAR6','Rejoga 1d20 em Barganha/Retórica disputados'],['Caçador','RES6','Brutal contra mamíferos, lagartos e insetos mutantes'],['Caos Sangrento','SOR6','Crítico pode causar ferimento extra'],['Casca-Grossa','FOR5','Carga máxima +12 kg'],['Centro de Massa','AGI7','Mira no Tronco sem penalidade; rejoga 1d20'],['Cirurgião de Escopeta','FOR5 AGI7','Escopetas ganham Perfurante 1'],['Colecionador de Tampas','CAR5','Preços de compra/venda ±10%'],['Come-Cobra','RES7','RD Venenoso +2'],['Compreensão','INT6','Bônus de revista pode ser usado de novo'],['Corrida Letal','SOR8','Ao matar, pode gerar 2 PA para o grupo'],['Cura Veloz','RES6 R','1º d20 extra grátis ao curar a si mesmo'],['Curandeiro','INT7','Primeiros Socorros curam +1 PV'],['Derretimento','PER10','Inimigos mortos por arma de energia explodem'],['Dogmeat','CAR5','Um cão aliado'],['Dureza','RES6 SOR6','RD Físico +1 em todas as áreas'],['Energia Solar','RES7','Restaura 1 dano Radiativo por hora de sol'],['Enlatados!','SOR5','+1 comida aleatória ao vasculhar'],['Entomologista','INT7','Perfurante 1 contra insetos'],['Especialista em Demolição','PER6 SOR6','Explosivos ganham Brutal; novas receitas'],['Estranho Misterioso','SOR7','Gasta Sorte: o Estranho dá um tiro letal'],['Esqueleto de Adamantium','RES7','Crítico só com 6+ de dano'],['Fantasma','PER5 AGI6','1º d20 extra grátis em Furtividade no escuro'],['Festeiro / Festeira','RES6 CAR7','Sem vício em álcool; bebida restaura 2 PV'],['Finesse','AGI9','1x por combate, rejoga todos os CD de dano'],['Físico Nuclear','INT9','+1 dano Radiativo por Efeito; núcleos +3 cargas'],['Fogo Concentrado','PER8 AGI6','Rejoga até 3 CD ao gastar munição extra'],['Franco-Atirador','PER8 AGI6','Após Mirar, escolhe a área de acerto sem penalidade'],['Gambiarrista','','Repara sem componentes (reparo temporário)'],['Golpe Perfurante','FOR7','Desarmado e lâminas ganham Perfurante 1'],['Hacker','INT8','Hackear: dificuldade −1'],['Homem / Mulher de Ação','','Ação maior extra sem aumento de dificuldade'],['Infiltrador','PER8','Rejoga 1d20 ao arrombar'],['Inspiração','CAR8','Reserva de PA do grupo +1'],['Lá Vai!','FOR8','1 PA aumenta o alcance de arremesso'],['Ladrão Mestre','PER8 AGI9','Detectá-lo ao arrombar/roubar fica 1 mais difícil'],['Mãos-Rápidas','AGI8','2 PA: CdT da arma +2 no ataque'],['Matador','FOR8','1 Sorte: crítico automático no corpo a corpo'],['Melhores Acertos Críticos','SOR9','1 Sorte: crítico automático'],['Metabolismo Rápido','RES6 R','+1 PV em toda cura que não seja repouso'],['Médico','INT8','Rejoga 1d20 ao tratar ferimento'],['Mira Firme','FOR8 AGI7','Mirar: rejoga 2d20 no 1º ataque ou 1d20 em todos'],['Mister Sandman','AGI9','Ataque furtivo silenciado +2 CD'],['Natureza Cautelosa','PER7','Rejoga 1d20 ao comprar d20 com PA (exclui Ousada)'],['Natureza Ousada','SOR7','Rejoga 1d20 ao dar PA ao mestre (exclui Cautelosa)'],['Ninja','AGI8','Ataque furtivo corpo a corpo +2 CD'],['Notívago','PER7','Penalidade de escuridão −1'],['Palma Paralisante','FOR8','Desarmado em área específica: Atordoante'],['Pancadão','FOR6','Coronhada ganha Brutal'],['Parasita','SOR6','+3 CD de munição encontrada'],['Passo Leve','','Ignora complicações de AGI gastando PA'],['Pharma Farmácia','SOR6','+1 remédio/narco ao vasculhar'],['Primeira Divisão','FOR8','Corpo a corpo de duas mãos ganha Brutal'],['Prontidão','PER7','Mirar de perto: próximo ataque Perfurante 1'],['Punho de Ferro','FOR6','Desarmado +1 CD de dano'],['Químico','INT7','Narcos duram 2x; receitas extras'],['Refrator','PER6 SOR7','RD Energético +1 em todas as áreas'],['Resistente a Narcos','RES7','Vício: um CD a menos'],['Resistência à Radiação','RES8','RD Radiativo +1 em todas as áreas'],['Saque Rápido','AGI6','Saca arma/item sem ação menor'],['Surto de Adrenalina','FOR7','Com PV abaixo do máximo, FOR conta como 10'],['Tamanho é Documento','RES7 AGI6','Armas pesadas +1 CD de dano'],['Tiro-Fu','AGI10','1 PA + munição: acerta um 2º alvo'],['Trem da Dor','FOR9 RES7','Investida com Armadura Potente ou supermutante'],['Vendedor de Carne-Seca','CAR8','Barganha de compra/venda: dificuldade −1'],['Vigarista','CAR7','Ignora a 1ª complicação ao mentir'],['Desbravador','PER6 RES6','Viagem em área agreste em metade do tempo'],['Barriga de Chumbo','RES6','Rejoga CD de radiação em comida/bebida']];
+const D={o:'vault',nec:false,name:'',add:{},gift:[],tr:[],tags:[],sk:{},pk:[],pkg:'',bug:'',nota:'',lvl:1,lsk:{},lpk:[],inv:[],caps:0};
+let st=JSON.parse(JSON.stringify(D));
+try{const s=localStorage.getItem('fo');if(s)st=Object.assign(st,JSON.parse(s))}catch(e){}
+const org=()=>O[st.o],robot=()=>st.o=='handy',necro=()=>st.o=='necro'||(st.o=='vault'&&st.nec);
+const base=a=>(org().base||{})[a]||5,cap=a=>(org().max||{})[a]||10;
+const fin=a=>Math.min(cap(a),base(a)+(st.add[a]||0)+(st.o=='sobrev'&&st.tr.includes('Dotado')&&st.gift.includes(a)?1:0));
+const pool=()=>5+A.filter(a=>(st.add[a]||0)<0).length-A.reduce((s,a)=>s+Math.max(0,st.add[a]||0),0);
+const forced=()=>necro()?'Sobrevivência':'';
+const nTags=()=>3+(st.o=='iniciado'?1:0)+(st.o=='vault'&&!st.nec?1:0)+(st.o=='sobrev'&&st.tr.includes('Instruído')?1:0);
+const isTag=s=>st.tags.includes(s)||s==forced();
+const cr=s=>(isTag(s)?2:0)+(st.sk[s]||0),rank=s=>Math.min(6,cr(s)+(st.lsk[s]||0));
+const XPT=[0,100,300,600,1000,1500,2100,2800,3600,4500,5500,6600,7800,9100,10500,12000,13600,15300,17100,19000,21000];
+const allPk=()=>st.pk.concat(st.lpk),pendSk=()=>st.lvl-1-Object.values(st.lsk).reduce((a,b)=>a+b,0),pendPk=()=>st.lvl-1-st.lpk.length;
+const wt=()=>st.inv.reduce((t,i)=>t+i.q*i.w,0),fmt=n=>(Math.round(n*100)/100).toString().replace('.',',');
+const exc=p=>(p[0]=='Natureza Cautelosa'&&allPk().includes('Natureza Ousada'))||(p[0]=='Natureza Ousada'&&allPk().includes('Natureza Cautelosa'));
+const skPts=()=>9+fin('INT')-Object.values(st.sk).reduce((a,b)=>a+b,0);
+const maxPk=()=>1+(st.o=='sobrev'&&st.tr.includes('Vantagem adicional')?1:0);
+function unmet(p){const r=[];p[1].split(' ').filter(Boolean).forEach(t=>{if(t=='R'){if(robot())r.push('não ser Robô')}else if(fin(t.slice(0,3))<+t.slice(3))r.push(t.slice(0,3)+' '+t.slice(3)+'+')});return r}
+const reqTxt=p=>p[1].replace(' R','').split(' ').filter(Boolean).map(t=>t.slice(0,3)+' '+t.slice(3)+'+').join(', ')+(p[1].includes('R')?' · não ser Robô':'')||'sem requisito';
+function pkgs(){let g=[...NOMEPK[org().pk]];if(st.o=='vault'&&st.nec)g=g.concat(NOMEPK.er);return g}
+function save(){try{localStorage.setItem('fo',JSON.stringify(st))}catch(e){}}
+function norm(){
+ A.forEach(a=>{if(st.add[a]<0&&base(a)!=5)st.add[a]=0;const m=cap(a)-base(a);if(st.add[a]>m)st.add[a]=m});
+ if(st.o!='sobrev'){st.tr=[];st.gift=[]}
+ if(!st.tr.includes('Dotado'))st.gift=[];
+ st.tags=st.tags.filter(t=>t!=forced()).slice(0,nTags());
+ while(pool()<0){const a=A.find(a=>st.add[a]>0);if(!a)break;st.add[a]--}
+ const lim=9+fin('INT');let used=0;
+ SK.forEach(([s])=>{const m=3-(isTag(s)?2:0);let v=Math.min(st.sk[s]||0,m);if(used+v>lim)v=Math.max(0,lim-used);used+=v;st.sk[s]=v});
+ st.pk=st.pk.filter(n=>{const p=P.find(x=>x[0]==n);return p&&!unmet(p).length}).slice(0,maxPk());
+ if(st.pkg&&!pkgs().includes(st.pkg))st.pkg='';
+ st.lvl=Math.min(21,Math.max(1,+st.lvl||1));st.lsk=st.lsk||{};st.lpk=st.lpk||[];st.inv=st.inv||[];st.caps=st.caps||0;
+ let lp=st.lvl-1;SK.forEach(([s])=>{const v=Math.max(0,Math.min(st.lsk[s]||0,6-cr(s),lp));st.lsk[s]=v;lp-=v});
+ st.lpk=st.lpk.filter(n=>{const p=P.find(x=>x[0]==n);return p&&!unmet(p).length&&!st.pk.includes(n)}).slice(0,st.lvl-1);
+}
+function render(){
+ norm();save();
+ const o=org(),h=[];
+ h.push(`<section id="s1"><h2>Etapa 1: Escolha sua origem</h2><p class="hint">Define limites de atributos, traço e pacote de equipamento.</p><div class="cards">${Object.keys(O).map(k=>`<button data-a="o" data-v="${k}" class="${k==st.o?'on':''}">${O[k].n}</button>`).join('')}</div><div class="box"><span class="scr">${o.n}</span>${o.t}</div>`);
+ if(st.o=='vault')h.push(`<label><input type="checkbox" data-a="nec" ${st.nec?'checked':''}> Ser necrótico (com permissão do mestre): troca Cria de Refúgio por Pós-Humano Necrótico</label>`);
+ if(st.o=='sobrev'){h.push(`<p class="hint">Traços escolhidos: ${st.tr.length}/2 (Vantagem adicional conta como traço)</p>`);Object.keys(TRAITS).forEach(t=>h.push(`<button class="perk ${st.tr.includes(t)?'on':''}" data-a="tr" data-v="${t}"><b>${t}</b><small>${TRAITS[t]}</small></button>`));
+  if(st.tr.includes('Dotado'))h.push(`<p class="hint">Dotado: escolha dois atributos para +1 (${st.gift.length}/2)</p><div class="cards">${A.map(a=>`<button data-a="gift" data-v="${a}" class="${st.gift.includes(a)?'on':''}">${AN[a]}</button>`).join('')}</div>`)}
+ h.push('</section>');
+ const pl=pool();
+ h.push(`<section id="s2"><h2>Etapa 2: Aumente os atributos S.P.E.C.I.A.L.</h2><p class="hint">Todos começam em 5. Distribua 5 pontos (máx. 10). Reduzir um 5 para 4 dá 1 ponto extra. <span class="pts ${pl?'bad':'ok'}">Pontos restantes: ${pl}</span></p>`);
+ A.forEach(a=>{const v=st.add[a]||0;h.push(`<div class="row"><span class="n">${AN[a]} <small>(${a})${cap(a)!=10?' · máx. '+cap(a):''}</small></span><button data-a="m" data-v="${a}" aria-label="Diminuir ${AN[a]}" ${base(a)!=5||v<=-1?'disabled':''}>−</button><b>${fin(a)}</b><button data-a="p" data-v="${a}" aria-label="Aumentar ${AN[a]}" ${pl<1||base(a)+v>=cap(a)?'disabled':''}>+</button></div>`)});
+ h.push('</section>');
+ const nt=nTags(),tl=skPts();
+ h.push(`<section id="s3"><h2>Etapa 3: Escolha as perícias</h2><p class="hint">Marque ${nt} Marcadas (começam em grau 2, sucesso crítico em d20 ≤ grau). Compre graus com ${9+fin('INT')} pontos (9 + INT); máx. grau 3 na criação. Marcadas: ${st.tags.length}/${nt}. <span class="pts ${tl?'bad':'ok'}">Pontos restantes: ${tl}</span>${forced()?' · Sobrevivência já é Marcada pela origem.':''}${st.o=='iniciado'?' · Uma Marcada deve ser Armas de Energia, Ciências ou Reparo.':''}</p><div class="sk">`);
+ SK.forEach(([s,a])=>{const t=isTag(s),r=cr(s);h.push(`<div class="row"><label><input type="checkbox" data-a="tag" data-v="${s}" ${t?'checked':''} ${s==forced()||(!t&&st.tags.length>=nt)?'disabled':''}><span>${s} <small>${a} ${fin(a)} · nº-alvo ${fin(a)+rank(s)}</small></span></label><button data-a="sm" data-v="${s}" aria-label="Diminuir ${s}" ${!(st.sk[s]>0)?'disabled':''}>−</button><b>${r}</b><button data-a="sp" data-v="${s}" aria-label="Aumentar ${s}" ${tl<1||r>=3?'disabled':''}>+</button></div>`)});
+ h.push('</div></section>');
+ h.push(`<section id="s4"><h2>Etapa 4: Escolha sua primeira vantagem</h2><p class="hint">Escolha ${maxPk()} (${st.pk.length}/${maxPk()}). Vantagens cujos requisitos você não atende aparecem esmaecidas.</p>`);
+ [...P].sort((a,b)=>!unmet(a).length==!unmet(b).length?0:unmet(a).length?1:-1).forEach(p=>{const u=unmet(p),sel=st.pk.includes(p[0]),ex=(p[0]=='Natureza Cautelosa'&&st.pk.includes('Natureza Ousada'))||(p[0]=='Natureza Ousada'&&st.pk.includes('Natureza Cautelosa'));h.push(`<button class="perk ${sel?'on':''} ${u.length?'no':''}" data-a="pk" data-v="${p[0]}" ${u.length||ex||(!sel&&st.pk.length>=maxPk())?'disabled':''}><b>${p[0]}</b> <small>${reqTxt(p)}${u.length?' — falta: '+u.join(', '):''}</small><small>${p[2]}</small></button>`)});
+ h.push('</section>');
+ h.push(`<section id="s5"><h2>Etapa 5: Escolha o equipamento inicial</h2><p class="hint">Escolha um pacote da sua origem. Perícias Marcadas e bugiganga dão itens extras.</p>${pkgs().map(n=>`<button class="perk ${st.pkg==n?'on':''}" data-a="pkg" data-v="${n}"><b>${n}</b><small>${PKG[n]}</small></button>`).join('')}`);
+ if(!robot()){h.push(`<p class="hint">Bugiganga pessoal (1x por missão, fora de combate, recupera 1 Ponto de Sorte)</p><input type="text" id="bug" placeholder="Descreva ou sorteie" value="${esc(st.bug)}"><div class="act"><button data-a="roll">Sortear (d20)</button></div>`)}
+ h.push('</section>');
+ h.push(`<section id="s6"><h2>Etapa 6: Dê um nome à personagem</h2><input type="text" id="nome" placeholder="Nome da personagem" value="${esc(st.name)}"><div class="act"><button data-a="reset">Recomeçar</button></div></section>`);
+
+ const nx=XPT[st.lvl];
+ h.push(`<section id="s7"><h2>Progressão: suba de nível</h2><p class="hint">Cada nível novo dá +1 PV máximo, +1 grau em uma perícia (máx. 6) e 1 vantagem. XP total para o Nível ${st.lvl}: ${XPT[st.lvl-1]}${nx?' · próximo nível: '+nx+' XP':' · último nível da tabela'}.</p><div class="row"><span class="n">Nível</span><button data-a="lvm" aria-label="Diminuir nível" ${st.lvl<=1?'disabled':''}>−</button><b>${st.lvl}</b><button data-a="lvp" aria-label="Subir de nível" ${st.lvl>=21?'disabled':''}>+</button></div>`);
+ if(st.lvl>1){h.push(`<p class="hint">Graus de perícia a gastar: <span class="pts ${pendSk()?'bad':'ok'}">${pendSk()}</span> · Vantagens a escolher: <span class="pts ${pendPk()?'bad':'ok'}">${pendPk()}</span></p><div class="sk">`);
+  SK.forEach(([s,a])=>{const r=rank(s);h.push(`<div class="row"><span class="n">${isTag(s)?'★ ':''}${s} <small>${a} ${fin(a)} · nº-alvo ${fin(a)+r}</small></span><button data-a="lsm" data-v="${s}" aria-label="Diminuir ${s}" ${!(st.lsk[s]>0)?'disabled':''}>−</button><b>${r}</b><button data-a="lsp" data-v="${s}" aria-label="Aumentar ${s}" ${pendSk()<1||r>=6?'disabled':''}>+</button></div>`)});
+  h.push('</div>');
+  const av=P.filter(p=>st.lpk.includes(p[0])||(pendPk()>0&&!st.pk.includes(p[0])&&!unmet(p).length&&!exc(p)));
+  h.push(`<h3>Vantagens novas</h3>`+(av.length?av.map(p=>`<button class="perk ${st.lpk.includes(p[0])?'on':''}" data-a="lpk" data-v="${p[0]}"><b>${p[0]}</b> <small>${reqTxt(p)}</small><small>${p[2]}</small></button>`).join(''):'<p class="hint">Nenhuma vantagem pendente.</p>'))}
+ h.push('</section>');
+ const dv=derived(),tt=wt(),ov=tt-dv.carga,pn=ov>0?1+Math.floor(ov/25):0;
+ h.push(`<section id="s8"><h2>Inventário</h2><p class="hint">Anote itens, quantidades e o peso de cada um (consulte o capítulo Equipamento do livro). O total é comparado à sua Capacidade de Carga.</p><div class="row"><span class="n">Tampas</span><input type="text" inputmode="numeric" id="caps" value="${st.caps}" style="width:6em" aria-label="Tampas"></div>`);
+ st.inv.forEach((i,k)=>h.push(`<div class="row"><span class="n">${esc(i.n)} <small>peso <input type="text" inputmode="decimal" class="iw" data-a="iw" data-v="${k}" value="${fmt(i.w)}" style="width:4.5em" aria-label="Peso de ${esc(i.n)}"> kg cada</small></span><button data-a="iq-" data-v="${k}" aria-label="Diminuir">−</button><b>${i.q}</b><button data-a="iq+" data-v="${k}" aria-label="Aumentar">+</button><button data-a="idel" data-v="${k}" aria-label="Remover ${esc(i.n)}">×</button></div>`));
+ if(!st.inv.length)h.push('<p class="hint">Inventário vazio.</p>');
+ h.push(`<div class="row"><input type="text" id="iN" placeholder="Item" style="flex:1;min-width:0"><input type="text" id="iQ" inputmode="numeric" placeholder="Qtd" style="width:4em"><input type="text" id="iW" inputmode="decimal" placeholder="kg" style="width:4em"></div><div class="act"><button class="pri" data-a="iadd">Adicionar item</button><button data-a="iseed">Importar pacote e itens das Marcadas</button></div>
+ <p class="${pn?'bad':'ok'}"><b>Peso: ${fmt(tt)} / ${fmt(dv.carga)} kg</b>${!pn?' · dentro da capacidade':tt>=2*dv.carga?' · carga dupla: você não pode se mover, falha em testes de FOR e AGI e sua Iniciativa é 0':` · sobrecarregado: dificuldade +${pn} em testes de FOR e AGI, sem a ação Correr, Iniciativa −${pn}`}</p></section>`);
+ $('#steps').innerHTML=h.join('');
+ sheet();spy();
+}
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function derived(){
+ const pk=n=>allPk().includes(n),f=fin;
+ let carga=robot()?75:75+(st.o=='sobrev'&&st.tr.includes('Esguio')?2.5:5)*f('FOR')+(pk('Casca-Grossa')?12:0);
+ const imR=st.o=='super'||robot()||necro(),imV=st.o=='super'||robot();
+ const b=f('FOR');
+ return{carga,def:f('AGI')>=9?2:1,ini:f('PER')+f('AGI'),pv:f('RES')+f('SOR')+st.lvl-1,cc:b>=11?3:b>=9?2:b>=7?1:0,
+  sorte:f('SOR')-(st.o=='sobrev'&&st.tr.includes('Dotado')?1:0),
+  fis:pk('Dureza')?1:0,ene:pk('Refrator')?1:0,rad:imR?'Imune':(pk('Resistência à Radiação')?1:0),ven:imV?'Imune':(pk('Come-Cobra')?2:0)}
+}
+function sheetText(){
+ const d=derived(),L=[];
+ L.push(`FALLOUT RPG — ${st.name||'Personagem sem nome'} (Nível ${st.lvl})`,`Origem: ${org().n}${st.o=='vault'&&st.nec?' (necrótico)':''}`);
+ if(st.tr.length)L.push('Traços: '+st.tr.join(', '));
+ L.push('S.P.E.C.I.A.L.: '+A.map(a=>a+' '+fin(a)).join(' | '));
+ L.push(`PV ${d.pv} | Defesa ${d.def} | Iniciativa ${d.ini} | Carga ${d.carga} kg | Dano CaC +${d.cc} CD | Pontos de Sorte ${d.sorte}`);
+ L.push(`RD: Físico ${d.fis} | Energético ${d.ene} | Radiativo ${d.rad} | Venenoso ${d.ven}`);
+ L.push('Perícias: '+SK.filter(([s])=>rank(s)>0).map(([s])=>s+' '+rank(s)+(isTag(s)?'*':'')).join(', ')+' (* Marcada)');
+ L.push('Vantagem: '+(allPk().join(', ')||'—'),'Pacote: '+(st.pkg||'—'));
+ const it=SK.filter(([s])=>isTag(s)).map(([s])=>s+': '+TAGI[s]);if(it.length)L.push('Itens das Marcadas: '+it.join('; '));
+ if(st.inv.length||st.caps)L.push('Inventário ('+fmt(wt())+'/'+d.carga+' kg; '+st.caps+' tampas): '+st.inv.map(i=>i.q+'x '+i.n).join(', '));
+ if(st.bug)L.push('Bugiganga: '+st.bug);
+ return L.join('\n');
+}
+function pipCode(){const d=derived(),pd=n=>(P.find(x=>x[0]==n)||[])[2]||'';
+ const o={v:1,nome:st.name,origem:org().n,otxt:org().t,nec:st.o=='vault'&&st.nec,nivel:st.lvl,tr:st.tr.slice(),esp:{},d:{pv:d.pv,def:d.def,ini:d.ini,carga:d.carga,cc:d.cc,sorte:d.sorte,fis:d.fis,ene:d.ene,rad:d.rad,ven:d.ven},per:SK.map(([n,a])=>({n,a,r:rank(n),t:isTag(n)})),van:allPk().map(n=>[n,pd(n)]),pac:st.pkg?st.pkg+(PKG[st.pkg]?': '+PKG[st.pkg]:''):'',inv:st.inv.map(i=>({n:i.n,q:i.q,w:i.w})),caps:st.caps||0,bug:st.bug||''};
+ A.forEach(a=>o.esp[a]=fin(a));
+ return 'PIPBOY1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
+function sheet(){
+ const d=derived(),w=[];
+ if(pool())w.push('Distribua os pontos de atributo ('+pool()+')');
+ if(st.tags.length<nTags())w.push('Escolha as perícias Marcadas ('+st.tags.length+'/'+nTags()+')');
+ if(st.o=='iniciado'&&!['Armas de Energia','Ciências','Reparo'].some(s=>st.tags.includes(s)))w.push('Iniciado: uma Marcada deve ser Armas de Energia, Ciências ou Reparo');
+ if(skPts())w.push('Gaste os pontos de perícia ('+skPts()+')');
+ if(st.pk.length<maxPk())w.push('Escolha a vantagem');
+ if(st.o=='sobrev'&&st.tr.length<2)w.push('Escolha dois traços');
+ if(st.gift.length<(st.tr.includes('Dotado')?2:0))w.push('Dotado: escolha dois atributos');
+ if(!st.pkg)w.push('Escolha o pacote de equipamento');
+ if(pendSk()>0)w.push('Gaste os graus de perícia dos níveis ('+pendSk()+')');
+ if(pendPk()>0)w.push('Escolha as vantagens dos níveis ('+pendPk()+')');
+ const sk=SK.filter(([s])=>rank(s)>0).map(([s])=>`<li>${isTag(s)?'<b>★ '+s+'</b>':s} ${rank(s)}</li>`).join('');
+ $('#sheet').innerHTML=`<div class="shead"><h2>${esc(st.name)||'Personagem sem nome'}</h2><div class="sub">${org().n}${st.o=='vault'&&st.nec?' (necrótico)':''} · Nível ${st.lvl}</div></div><div class="sbody">
+ <div class="spec">${A.map(a=>`<div><span class="lb">${a}</span><b>${fin(a)}</b></div>`).join('')}</div>
+ <h3>Estatísticas derivadas</h3><dl><div><dt>Pontos de vida</dt><dd>${d.pv}</dd></div><div><dt>Defesa</dt><dd>${d.def}</dd></div><div><dt>Iniciativa</dt><dd>${d.ini}</dd></div><div><dt>Capacidade de Carga</dt><dd>${d.carga} kg</dd></div><div><dt>Dano corpo a corpo</dt><dd>+${d.cc} CD</dd></div><div><dt>Pontos de Sorte</dt><dd>${d.sorte}</dd></div><div><dt>RD Físico / Energético</dt><dd>${d.fis} / ${d.ene}</dd></div><div><dt>RD Radiativo / Venenoso</dt><dd>${d.rad} / ${d.ven}</dd></div></dl>
+ <h3>Perícias (★ Marcada)</h3><ul class="t">${sk||'<li>—</li>'}</ul>
+ <h3>Vantagem</h3><div>${allPk().join(', ')||'—'}</div>
+ <h3>Equipamento</h3><div>${st.pkg||'—'}</div>
+ ${SK.some(([s])=>isTag(s))?'<ul class="t">'+SK.filter(([s])=>isTag(s)).map(([s])=>`<li>${s}: ${TAGI[s]}</li>`).join('')+'</ul>':''}
+ ${st.inv.length||st.caps?`<h3>Inventário</h3><div>${fmt(wt())} / ${fmt(d.carga)} kg · ${st.caps} tampas</div><ul class="t">${st.inv.map(i=>`<li>${i.q}x ${esc(i.n)}</li>`).join('')}</ul>`:''}
+ ${st.bug?`<h3>Bugiganga</h3><div>${esc(st.bug)}</div>`:''}
+ ${w.length?`<div class="box warn"><span class="scr">Falta</span><ul class="t">${w.map(x=>'<li>'+x+'</li>').join('')}</ul></div>`:'<p class="ok"><b>Ficha completa.</b></p>'}
+ <div class="act"><button class="pri" data-a="copy">Copiar ficha</button><button data-a="print">Imprimir</button><button data-a="pip">Enviar ao Pip-Boy</button></div><div id="msg" class="hint"></div></div>`;
+}
+const tabs=[...document.querySelectorAll('#tabs a')];let tabNow=-1;
+function spy(){const y=window.innerHeight*.35;let cur=0;document.querySelectorAll('#steps section').forEach((s,i)=>{if(s.getBoundingClientRect().top<y)cur=i});
+ tabs.forEach((t,i)=>t.setAttribute('aria-current',i==cur?'true':'false'));
+ if(cur!=tabNow){tabNow=cur;const t=tabs[cur],u=t.parentNode.parentNode;u.scrollLeft=t.offsetLeft-(u.clientWidth-t.offsetWidth)/2}}
+addEventListener('scroll',spy,{passive:true});addEventListener('resize',spy);
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-a]');if(!b||b.disabled)return;
+ const a=b.dataset.a,v=b.dataset.v,tog=(arr,x)=>arr.includes(x)?arr.splice(arr.indexOf(x),1):arr.push(x);
+ if(a=='nec')return;
+ if(a=='o'){st.o=v;st.pkg='';st.tags=[];st.pk=[];st.nec=false;st.add={};st.sk={}}
+ else if(a=='p')st.add[v]=(st.add[v]||0)+1;
+ else if(a=='m')st.add[v]=(st.add[v]||0)-1;
+ else if(a=='sp')st.sk[v]=(st.sk[v]||0)+1;
+ else if(a=='sm')st.sk[v]=(st.sk[v]||0)-1;
+ else if(a=='tag'){if(e.target.tagName=='INPUT'){tog(st.tags,v)}else return}
+ else if(a=='tr'){if(st.tr.includes(v))tog(st.tr,v);else if(st.tr.length<2)st.tr.push(v)}
+ else if(a=='gift'){if(st.gift.includes(v))tog(st.gift,v);else if(st.gift.length<2)st.gift.push(v)}
+ else if(a=='pk')tog(st.pk,v);
+ else if(a=='pkg')st.pkg=v;
+ else if(a=='lvp')st.lvl++;else if(a=='lvm')st.lvl--;
+ else if(a=='lsp')st.lsk[v]=(st.lsk[v]||0)+1;else if(a=='lsm')st.lsk[v]--;
+ else if(a=='lpk'){if(st.lpk.includes(v))tog(st.lpk,v);else if(pendPk()>0)st.lpk.push(v)}
+ else if(a=='iq+')st.inv[v].q++;else if(a=='iq-')st.inv[v].q=Math.max(1,st.inv[v].q-1);else if(a=='idel')st.inv.splice(v,1);
+ else if(a=='iw')return;
+ else if(a=='iadd'){const n=$('#iN').value.trim();if(!n)return;st.inv.push({n,q:Math.max(1,parseInt($('#iQ').value)||1),w:Math.max(0,parseFloat(($('#iW').value||'0').replace(',','.'))||0)})}
+ else if(a=='iseed'){const src=(PKG[st.pkg]||'').split(';').map(x=>x.trim()).filter(Boolean).concat(SK.filter(([x])=>isTag(x)).map(([x])=>TAGI[x]));src.forEach(n=>{if(!st.inv.some(i=>i.n==n))st.inv.push({n,q:1,w:0})})}
+ else if(a=='roll'){st.bug=BUG[Math.floor(Math.random()*20)]}
+ else if(a=='reset'){if(!confirm('Apagar a ficha atual?'))return;st=JSON.parse(JSON.stringify(D))}
+ else if(a=='print'){window.print();return}
+ else if(a=='pip'){const m=$('#msg'),c=pipCode();m.innerHTML='<p>Código copiado. Se não colar, copie abaixo e cole no Pip-Boy (STAT › IMPORTAR):</p><textarea id="pipc" readonly rows="4" style="width:100%;font:.8rem monospace"></textarea>';const ta=$('#pipc');ta.value=c;ta.select();try{navigator.clipboard&&navigator.clipboard.writeText(c).catch(()=>{})}catch(x){}return}
+ else if(a=='copy'){const t=sheetText();const m=$('#msg');
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>m.textContent='Ficha copiada.').catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');m.textContent='Ficha copiada.'}catch(x){m.textContent='Não foi possível copiar.'}ta.remove()});return}
+ render();
+});
+document.addEventListener('change',e=>{if(e.target.dataset.a=='nec'){st.nec=e.target.checked;st.tags=[];st.pkg='';render()}});
+document.addEventListener('input',e=>{if(e.target.id=='nome'){st.name=e.target.value;save();sheet()}if(e.target.id=='bug'){st.bug=e.target.value;save();sheet()}});
+document.addEventListener('change',e=>{if(e.target.dataset.a=='iw'&&st.inv[e.target.dataset.v]){st.inv[e.target.dataset.v].w=Math.max(0,parseFloat(e.target.value.replace(',','.'))||0);render()}});
+document.addEventListener('input',e=>{if(e.target.id=='caps'){st.caps=Math.max(0,parseInt(e.target.value)||0);save();sheet()}});
+render();
+</script>
+</body>
+</html>

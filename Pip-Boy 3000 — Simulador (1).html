@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pip-Boy 3000 — Simulador</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📟</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--g:#2dff6a;--bg:#031208;--dim:#1b8c43;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-c="amber"]{--g:#ffb52e;--bg:#150d02;--dim:#a06d12}
+:root[data-c="ice"]{--g:#d8f3ff;--bg:#06101a;--dim:#6f93a8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;background:#000}
+*{box-sizing:border-box}
+#pb{max-width:940px;height:100%;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);color:var(--g);font:22px/1.15 'VT323','Courier New',monospace;text-shadow:0 0 6px var(--g);position:relative;overflow:hidden}
+#pb::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px)}
+button{font:inherit;color:inherit;text-shadow:inherit;background:none;border:0;cursor:pointer;padding:2px 10px}
+button:focus-visible,li:focus-visible{outline:2px solid var(--g);outline-offset:1px}
+.tabs,.subs{display:flex;flex-wrap:wrap;gap:4px;padding:6px 12px 0;align-items:center}
+.tabs{border-bottom:2px solid var(--g);padding-bottom:0}
+.tabs .t{padding:4px 14px 2px;font-size:26px}
+.tabs .t.on{background:var(--g);color:var(--bg);text-shadow:none}
+.tabs .sp{flex:1}
+.tabs .o{font-size:18px;color:var(--dim)}
+.subs{padding-bottom:4px;border-bottom:1px solid var(--dim)}
+.subs button.on{border-bottom:2px solid var(--g)}
+.subs button{color:var(--dim)}.subs button.on{color:var(--g)}
+.body{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:12px 16px;min-height:0;overflow:auto}
+ul{margin:0;padding:0;list-style:none}
+li{display:flex;justify-content:space-between;gap:10px;padding:1px 8px;cursor:pointer}
+li.on{background:var(--g);color:var(--bg);text-shadow:none}
+.det{border-left:1px solid var(--dim);padding-left:16px}
+.det h2{margin:0 0 6px;font-weight:400;font-size:28px}
+.det pre{margin:0 0 12px;white-space:pre-wrap;font:inherit;color:var(--g)}
+.big{font-size:84px;line-height:1}
+.act{border:1px solid var(--g);padding:3px 14px}
+.act:hover{background:var(--g);color:var(--bg);text-shadow:none}
+.st{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 18px;border-top:2px solid var(--g);padding:6px 16px}
+.msg{padding:0 16px;min-height:24px;color:var(--dim)}
+.bar{display:inline-block;width:90px;height:12px;border:1px solid var(--g);vertical-align:-1px}
+.bar i{display:block;height:100%;background:var(--g)}
+  .fld{display:block;width:100%;margin:0 0 8px;background:transparent;color:var(--g);border:1px solid var(--g);font:inherit;padding:3px 6px;text-shadow:inherit;border-radius:0}
+.fld option{background:var(--bg)}
+label{display:block;margin:0 0 4px}
+#boot{position:absolute;inset:0;z-index:5;background:var(--bg);padding:24px;white-space:pre-wrap;cursor:pointer}
+@media(max-width:640px){.body{grid-template-columns:1fr}.det{border-left:0;border-top:1px solid var(--dim);padding:10px 0 0}#pb{font-size:20px}.tabs .t{padding:4px 8px 2px;font-size:22px}}
+@media(prefers-reduced-motion:no-preference){.cur{animation:b 1s steps(2) infinite}@keyframes b{50%{opacity:0}}}
+</style>
+</head>
+<body>
+<div id="pb">
+  <div id="boot"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="subs" id="subs"></div>
+  <div class="body"><ul id="list" role="listbox" aria-label="Itens"></ul><div class="det" id="det"></div></div>
+  <div class="msg" id="msg"></div>
+  <div class="st" id="st"></div>
+</div>
+<script>
+const TABS=['STAT','INV','V.A.T.S','DATA','MAPA','RÁDIO'];
+const SUBS=[['FICHA','SPECIAL','PERÍCIAS','PERKS','IMPORTAR'],['ARMAS','ROUPAS','ARMADURAS','AJUDAS','DIVERSOS'],['TESTE','ATAQUE','DANO','ÁREA'],['MISSÕES','NOTAS'],['MUNDO'],['SINTONIA']];
+const S={tab:0,sub:0,sel:0,hp:0,rad:0,loc:0,st:0,pc:null,missoes:[],notas:[],radios:[],snd:false,eq:{},msg:'',vf:{},iv:{},R:null,ed:null,pa:0,lk:0};
+const ATR=[['FOR','Força','Dano corpo a corpo e capacidade de carga.'],['PER','Percepção','Precisão em mira e detecção de inimigos.'],['RES','Resistência','Pontos de vida e resistência a ambientes hostis.'],['CAR','Carisma','Preços melhores e diálogos persuasivos.'],['INT','Inteligência','Terminais, criação de itens e perícias.'],['AGI','Agilidade','Defesa, iniciativa e furtividade.'],['SOR','Sorte','Pontos de Sorte e achados melhores.']];
+const cat=n=>/armadura|capacete|peitoral|couraça/i.test(n)?'ARMADURAS':/roupa|armadura|jaleco|chap[eé]u|macac[aã]o|traje|uniforme|capacete|bandana|[oó]culos/i.test(n)?'ROUPAS':/machete|bast[aã]o|pistola|rifle|faca|soqueira|escopeta|espingarda|tomahawk|lan[cç]a|molotov|granada|taco|revólver|submetralhadora|muni[cç][aã]o|c[eé]lula de energia|bolas de beisebol/i.test(n)?'ARMAS':/stimpak|radaway|mentat|buffout|calmex|psycho|jet|nuka|cerveja|[aá]gua|iguana|comida|rem[eé]dio|primeiros socorros/i.test(n)?'AJUDAS':'DIVERSOS';
+const INV=[];
+const MAP=[['Pingo da Uva',190,140,0,'Localidade padrão do mapa.']];
+const RADS=()=>[['Desligado','—',['']]].concat(S.radios);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const K='pipboy-v1';
+function persist(){try{localStorage.setItem(K,JSON.stringify({missoes:S.missoes,notas:S.notas,radios:S.radios,pc:S.pc,inv:INV,eq:S.eq,hp:S.hp,rad:S.rad,loc:S.loc,lk:S.lk,pa:S.pa,locais:MAP.slice(1)}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(K)||'{}');for(const k of['missoes','notas','radios'])if(Array.isArray(d[k]))S[k]=d[k];if(d.pc&&d.pc.d&&d.pc.esp)S.pc=d.pc;if(Array.isArray(d.inv)){INV.length=0;INV.push(...d.inv)}if(d.eq&&typeof d.eq=='object')S.eq=d.eq;for(const k of['hp','rad','loc','lk','pa'])if(typeof d[k]=='number')S[k]=d[k];if(Array.isArray(d.locais)){MAP.length=1;d.locais.forEach(m=>{if(Array.isArray(m)&&m.length>=5)MAP.push([String(m[0]),+m[1]||0,+m[2]||0,+m[3]||0,String(m[4])])})}if(S.loc>=MAP.length)S.loc=0;if(typeof d.lk!='number'&&S.pc)S.lk=S.pc.d.sorte}catch(e){}}
+const $=s=>document.querySelector(s);
+const wt=()=>INV.reduce((a,i)=>a+i.w*i.q,0), cap=()=>S.pc?S.pc.d.carga+dv('FOR')*5:0, mx=()=>S.pc?S.pc.d.pv+dv('RES')+dv('SOR'):0;
+let AC;
+function ac(){return AC||(AC=new(window.AudioContext||window.webkitAudioContext)())}
+function beep(f=520,d=.04){if(!S.snd)return;try{const a=ac(),o=a.createOscillator(),g=a.createGain();o.type='square';o.frequency.value=f;g.gain.value=.04;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d)}catch(e){}}
+function noise(d=.03,v=.1){if(!S.snd)return;try{const a=ac(),b=a.createBuffer(1,a.sampleRate*d,a.sampleRate),c=b.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=(Math.random()*2-1)*v;const s=a.createBufferSource();s.buffer=b;s.connect(a.destination);s.start()}catch(e){}}
+function geiger(n){for(let i=0;i<Math.min(n,40);i++)setTimeout(()=>noise(.012,.25),Math.random()*1800)}
+function items(){
+  const t=TABS[S.tab],s=SUBS[S.tab][S.sub];
+  if(t=='INV')return INV.filter(i=>i.t==s).map(i=>{const eq=i.t=='ARMADURAS'?!!i.eqp:S.eq[i.t]==i.n;return{n:i.n,r:(i.q>1||i.fx)?'x'+i.q:(eq?'[E]':''),d:(i.d?i.d+'\n':'')+(i.t=='ARMADURAS'?armTxt(i):'')+(i.cd?'Dano '+i.cd+' CD'+(i.pf?' · Perfurante '+i.pf:'')+' · Distância '+(i.di||'Próxima')+'\n':'')+'Peso '+i.w+' kg',act:i.t=='DIVERSOS'?null:i.fx?'Usar':eq?'Desequipar':'Equipar',inv:i,rm:1,ed:1}}).concat([{n:'+ Novo item',r:'',add:1,d:'Preencha os campos abaixo para criar um item em '+s+'.'}]);
+  if(t=='V.A.T.S'){const c=S.pc,W=INV.filter(i=>i.t=='ARMAS'&&!/muni|célula/i.test(i.n)).map(i=>({n:i.n,r:i.cd?i.cd+' CD':'',d:'Arma do inventário.',inv:i,v:1}));
+    if(s=='TESTE')return[{n:'Teste livre',r:'',d:'Informe o número-alvo manualmente.',v:1,free:1}].concat(c?c.per.map(p=>({n:(p.t?'★ ':'')+p.n,r:ES(p.a)+p.r,d:'Atributo '+p.a+' '+ES(p.a)+' + grau '+p.r,v:1,p})):[]);
+    if(s=='ÁREA')return AR.map(a=>({n:a[1],r:a[0],d:'Resultado de 1d20: '+a[0],v:1}));
+    return[{n:s=='ATAQUE'?'Ataque livre':'Dano livre',r:'',d:'Configure os valores manualmente.',v:1,free:1}].concat(W)}
+  const AL=t=='MAPA'?'+ Nova localidade':t=='RÁDIO'?'+ Nova estação':s=='NOTAS'?'+ Nova nota':'+ Nova missão',ADD={n:AL,r:'',add:1,d:'Preencha os campos abaixo para criar uma entrada.'};
+  if(t=='MAPA')return MAP.map((m,i)=>({n:m[0],r:S.loc==i?'◄':'',d:m[4]+'\nRadiação da zona: '+(m[3]?m[3]*40+' RAD':'nenhuma'),act:S.loc==i?null:'Viajar',rm:i?1:0,map:i})).concat([ADD]);
+  if(t=='DATA'){const k=s=='NOTAS'?'notas':'missoes';return S[k].map((x,i)=>({n:x.n,r:k=='missoes'?x.s:'',d:x.d||'(sem texto)',act:k=='missoes'?(x.s=='ATIVA'?'Marcar como feita':'Reabrir'):null,rm:1,k,i})).concat([ADD])}
+  if(t=='RÁDIO')return RADS().map((m,i)=>i?{n:m[0],r:m[1]+(S.st==i?' ♪':''),d:'Frequência '+m[1]+' MHz',act:S.st==i?null:'Sintonizar',rd:i,rm:1}:{n:'Desligado',r:'',d:'Rádio desligado.',act:S.st==0?null:'Desligar',rd:0}).concat([ADD]);
+  if(t=='STAT'){const c=S.pc,d=c&&c.d;
+    if(s=='IMPORTAR')return(c?[{n:c.nome||'Sem nome',r:'Nv'+c.nivel,d:'Personagem importado: '+c.origem+'.\nRemova para limpar a ficha e o inventário.',rm:1,pcrm:1}]:[]).concat([{n:c?'+ Atualizar personagem':'+ Importar personagem',add:1,d:'Cole o código gerado pelo Criador de Personagem (botão Enviar ao Pip-Boy). O inventário também é carregado.'}]);
+    if(!c)return[{n:'Nenhum personagem',d:'Abra a subaba IMPORTAR e cole o código do Criador de Personagem.'}];
+    if(s=='SPECIAL')return ATR.map(a=>({n:a[1],r:ES(a[0]),big:ES(a[0]),d:a[2]+(bn(a[0])?'\nBase '+c.esp[a[0]]+' · Armaduras '+(bn(a[0])>0?'+':'')+bn(a[0]):'')}));
+    if(s=='PERÍCIAS'){const r=c.per.filter(p=>p.r>0||p.t).map(p=>({n:(p.t?'★ ':'')+p.n,r:p.r,big:p.r,d:'Atributo '+p.a+' '+ES(p.a)+'\nNúmero-alvo '+(ES(p.a)+p.r)+(p.t?'\nPerícia Marcada.':'')}));return r.length?r:[{n:'Sem perícias',d:'Nenhum grau de perícia no personagem.'}]}
+    if(s=='PERKS')return c.van.length?c.van.map(v=>({n:v[0],r:'',d:v[1]})):[{n:'Sem vantagens',d:'Nenhuma vantagem escolhida.'}];
+    return[{n:'Personagem',r:c.nome||'Sem nome',d:c.origem+(c.nec?' (necrótico)':'')+'\n'+c.otxt+(c.tr.length?'\nTraços: '+c.tr.join(', '):'')},{n:'Nível',r:c.nivel,d:'Nível atual do personagem.'},{n:'Pontos de vida',r:S.hp+'/'+mx(),d:'PV atuais e máximos.',act:'Curar +1',rm:1,rmL:'Sofrer −1',heal:1,dmg:1},{n:'Defesa',r:DEF(),d:'Base (Agilidade) '+(DEF()-bd())+' + armaduras '+bd()},{n:'Armaduras',r:INV.filter(i=>i.t=='ARMADURAS'&&i.eqp).length,d:armSum()},{n:'Iniciativa',r:d.ini+dv('PER')+dv('AGI'),d:'Valor de iniciativa.'},{n:'Dano corpo a corpo',r:'+'+d.cc+' CD',d:'Bônus de dano em ataques corpo a corpo.'},{n:'Pontos de Sorte',r:S.lk+'/'+lm(),d:'Pontos de Sorte atuais e máximos.',act:'Renovar',luck:1},{n:'Capacidade de Carga',r:cap()+' kg',d:'Peso atual: '+Math.round(wt()*10)/10+' kg.'},{n:'RD Físico',r:d.fis,d:'Redução de dano físico.'},{n:'RD Energético',r:d.ene,d:'Redução de dano energético.'},{n:'RD Radiativo',r:d.rad,d:'Redução de dano radiativo.'},{n:'RD Venenoso',r:d.ven,d:'Redução de dano venenoso.'}].concat(c.pac?[{n:'Pacote',d:c.pac}]:[]).concat(c.bug?[{n:'Bugiganga',d:c.bug}]:[])}
+  return[];
+}
+function say(m){S.msg=m;$('#msg').textContent='> '+m}
+function act(){
+  const it=items()[S.sel];if(!it||!it.act)return;
+  if(it.inv){const i=it.inv;
+    if(i.fx){
+      i.q--;if(!i.q)INV.splice(INV.indexOf(i),1);say(i.n+' usado.');beep(700,.08)}
+    else if(i.t=='ARMADURAS')eqArm(i);
+    else{S.eq[i.t]=S.eq[i.t]==i.n?null:i.n;say(S.eq[i.t]?i.n+' equipado.':i.n+' guardado.');beep(420)}}
+  if(it.map!==undefined){const m=MAP[it.map];S.loc=it.map;if(m[3]){S.rad+=m[3]*40;geiger(m[3]*6);say('Chegada em '+m[0]+'. Radiação aumentando!')}else say('Chegada em '+m[0]+'.');beep(300,.1)}
+  if(it.rd!==undefined){S.st=it.rd;noise(.25,.2);say(it.rd?'Sintonizado: '+RADS()[it.rd][0]:'Rádio desligado.')}
+  if(it.heal){S.hp=Math.min(mx(),S.hp+1);say('PV +1.')}
+  if(it.luck){S.lk=lm();say('Pontos de Sorte renovados.')}
+  if(it.k=='missoes'){const m=S.missoes[it.i];m.s=m.s=='ATIVA'?'FEITA':'ATIVA';persist();say('Missão atualizada.')}
+  S.hp=Math.min(S.hp,mx());persist();render();
+}
+function render(){
+  $('#tabs').innerHTML=TABS.map((t,i)=>`<button class="t ${i==S.tab?'on':''}" data-t="${i}">${t}</button>`).join('')+`<span class="sp"></span><button class="o" id="cor">COR</button><button class="o" id="snd">SOM: ${S.snd?'LIG':'DESL'}</button>`;
+  $('#subs').innerHTML=SUBS[S.tab].map((s,i)=>`<button class="${i==S.sub?'on':''}" data-s="${i}">${s}</button>`).join('');
+  const its=items();if(S.sel>=its.length)S.sel=its.length-1;if(S.sel<0)S.sel=0;{const k=S.tab+'|'+S.sub+'|'+S.sel;if(k!==S.rk){S.rk=k;S.R=null}}if(S.ed&&!(its[S.sel]&&its[S.sel].inv===S.ed))S.ed=null;
+  $('#list').innerHTML=its.map((it,i)=>`<li role="option" tabindex="0" class="${i==S.sel?'on':''}" data-i="${i}"><span>${esc(it.n)}</span><span>${esc(it.r===undefined?'':it.r)}</span></li>`).join('')||'<li>Vazio</li>';
+  const it=its[S.sel];let h='';
+  if(it){h=`<h2>${esc(it.n)}</h2>`+(it.big?`<div class="big">${it.big}</div>`:'')+`<pre>${esc(it.d)}</pre>`;
+    if(it.add||(S.ed&&it.inv===S.ed))h+=form();else if(it.v)h+=vats(it);
+    else{
+      if(it.act)h+=`<button class="act" id="act">${it.act}</button> `;
+      if(it.ed)h+='<button class="act" id="ed">Editar</button> ';
+      if(it.rm)h+=`<button class="act" id="rm">${it.rmL||'Remover'}</button>`;
+      if(TABS[S.tab]=='MAPA')h+=mapSvg(it.map);
+      if(TABS[S.tab]=='RÁDIO')h+=`<svg viewBox="0 0 300 60" width="100%" height="60" aria-hidden="true" style="margin-top:10px"><path id="wv" fill="none" stroke="currentColor" stroke-width="2"/></svg><pre id="np"></pre>`}}
+  $('#det').innerHTML=h;
+  const bar=(v,m)=>`<span class="bar"><i style="width:${Math.max(0,v/m*100)}%"></i></span>`;
+  const c=S.pc;$('#st').innerHTML=`<span>PV ${c?S.hp+'/'+mx()+' '+bar(S.hp,mx()):'—'}</span><span>NÍVEL ${c?c.nivel:'—'}</span><span>SORTE ${c?S.lk+'/'+lm():'—'}</span><span>PA ${S.pa}/6</span><span>RAD ${S.rad}</span><span>PESO ${Math.round(wt()*10)/10}/${c?cap():'—'}</span><span>${MAP[S.loc][0]}</span>`;
+}
+function form(){const t=TABS[S.tab],s=SUBS[S.tab][S.sub],f=(id,ph,ta)=>ta?`<textarea class="fld" id="${id}" rows="4" placeholder="${ph}" maxlength="400"></textarea>`:`<input class="fld" id="${id}" placeholder="${ph}" maxlength="60" autocomplete="off">`;
+  let h;if(t=='INV')return invForm();
+  if(t=='MAPA')return f('f1','Nome da localidade')+f('f2','Descrição',1)+`<select class="fld" id="f3"><option value="0">Radiação: nenhuma</option><option value="1">Radiação: baixa</option><option value="3">Radiação: média</option><option value="6">Radiação: alta</option><option value="10">Radiação: extrema</option></select><div>Toque no mapa para posicionar.</div>`+mapSvg(-1,1)+`<br><button class="act" id="save">Salvar</button>`;
+  if(t=='STAT')return `<textarea class="fld" id="f1" rows="6" placeholder="Cole aqui o código PIPBOY1:..."></textarea><button class="act" id="save">Importar</button>`;
+  if(t=='RÁDIO')h=f('f1','Nome da estação')+f('f2','Frequência (ex.: 101.3)')+f('f3','Transmissões, uma por linha',1);
+  else if(s=='NOTAS')h=f('f1','Título')+f('f2','Texto da nota',1);
+  else h=f('f1','Título da missão')+f('f2','Descrição',1)+`<select class="fld" id="f3"><option>ATIVA</option><option>FEITA</option></select>`;
+  return h+`<button class="act" id="save">Salvar</button>`}
+function save1(){const t=TABS[S.tab],s=SUBS[S.tab][S.sub],v=id=>(($('#'+id)||{}).value||'').trim();
+  if(t=='INV')return invSave();
+  if(t=='MAPA'){const n=v('f1');if(!n)return say('Informe o nome da localidade.');const q=S.pp||[40+Math.floor(Math.random()*300),30+Math.floor(Math.random()*220)];MAP.push([n,q[0],q[1],+v('f3')||0,v('f2')||'Sem descrição.']);S.pp=null;S.sel=MAP.length-1;persist();say('Localidade salva.');beep(700,.08);return render()}
+  if(t=='STAT')return importPc(v('f1'));
+  const n=v('f1');if(!n)return say('Informe um nome ou título.');
+  if(t=='RÁDIO'){const ls=v('f3').split('\n').map(x=>x.trim()).filter(Boolean);S.radios.push([n,v('f2')||'—',ls.length?ls:['Sem programação cadastrada.']]);S.sel=S.radios.length}
+  else if(s=='NOTAS'){S.notas.push({n,d:v('f2')});S.sel=S.notas.length-1}
+  else{S.missoes.push({n,d:v('f2'),s:v('f3')||'ATIVA'});S.sel=S.missoes.length-1}
+  persist();say('Salvo.');beep(700,.08);render()}
+function importPc(txt){let c;try{c=JSON.parse(decodeURIComponent(escape(atob(txt.replace(/^\s*PIPBOY1:/,'').replace(/\s+/g,'')))))}catch(e){return say('Código inválido. Gere-o de novo no Criador de Personagem.')}
+  if(!c||c.v!=1||!c.d||!c.esp||!Array.isArray(c.per))return say('Código não reconhecido.');
+  S.pc=c;S.hp=c.d.pv;S.lk=c.d.sorte;S.pa=0;S.eq={};INV.length=0;
+  (c.inv||[]).forEach(i=>{const t=cat(i.n);INV.push({n:String(i.n),t,w:+i.w||0,q:+i.q||1,d:'',fx:t=='AJUDAS'?1:0})});
+  if(c.caps>0)INV.push({n:'Tampinhas',t:'DIVERSOS',w:0,q:+c.caps,d:'Moeda corrente do ermo.',fx:0});
+  S.tab=0;S.sub=0;S.sel=0;persist();say('Personagem importado: '+(c.nome||'sem nome')+'.');beep(700,.08);render()}
+function rem(){const it=items()[S.sel];if(!it||!it.rm)return;
+  if(it.inv){const i=it.inv;if(S.eq[i.t]==i.n)S.eq[i.t]=null;INV.splice(INV.indexOf(i),1);persist();say('Item removido.');return render()}
+  if(it.map!==undefined){MAP.splice(it.map,1);if(S.loc==it.map)S.loc=0;else if(S.loc>it.map)S.loc--;persist();say('Localidade removida.');return render()}
+  if(it.dmg){S.hp=Math.max(0,S.hp-1);persist();return render()}
+  if(it.pcrm){S.pc=null;INV.length=0;S.eq={};S.hp=0;persist();say('Personagem removido.');return render()}
+  if(it.rd){S.radios.splice(it.rd-1,1);if(S.st==it.rd)S.st=0;else if(S.st>it.rd)S.st--}
+  else S[it.k].splice(it.i,1);
+  persist();say('Removido.');render()}
+function mapSvg(sel,pick){return `<svg id="mp" viewBox="0 0 380 280" width="100%" style="margin-top:10px;border:1px solid var(--dim);touch-action:manipulation" aria-label="Mapa">`+
+  MAP.map((m,i)=>`<circle cx="${m[1]}" cy="${m[2]}" r="${i==sel?9:5}" fill="${i==S.loc?'currentColor':'none'}" stroke="currentColor" stroke-width="2"/><text x="${m[1]>250?m[1]-10:m[1]+10}" y="${m[2]+4}" text-anchor="${m[1]>250?'end':'start'}" font-size="14" fill="currentColor" stroke="none" style="text-shadow:none">${esc(m[0])}</text>`).join('')+
+  (pick?`<circle id="pm" cx="${S.pp?S.pp[0]:0}" cy="${S.pp?S.pp[1]:0}" r="7" fill="none" stroke="currentColor" stroke-dasharray="2 2" stroke-width="2"${S.pp?'':' visibility="hidden"'}/>`:'')+`</svg>`}
+function tick(t){
+  const w=$('#wv');
+  if(w){const A=S.st?18:1;let d='M0 30';for(let x=0;x<=300;x+=4)d+=` L${x} ${30+Math.sin(x/9+t/150)*A*Math.sin(x/41+t/700)+(S.st?(Math.random()-.5)*6:0)}`;w.setAttribute('d',d);
+    const n=$('#np');if(n)n.textContent=S.st?'No ar: '+(r=>r[Math.floor(t/4000)%r.length])(RADS()[S.st][2]):''}
+  requestAnimationFrame(tick)}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button,li');if(!b)return;
+  if(b.dataset.t!==undefined){S.pp=null;S.tab=+b.dataset.t;S.sub=0;S.sel=0;beep(600)}
+  else if(b.dataset.s!==undefined){S.sub=+b.dataset.s;S.sel=0;beep(500)}
+  else if(b.dataset.i!==undefined){S.sel=+b.dataset.i;beep(380,.02)}
+  else if(b.id=='act')return act();
+  else if(b.id=='save')return save1();
+  else if(b.id=='rm')return rem();
+  else if(b.id=='ed'){S.ed=items()[S.sel].inv;S.fk=null}
+  else if(b.id=='cn'){S.ed=null;S.fk=null}
+  else if(b.dataset.vb)return vb(b.dataset.vb,b.dataset.di);
+  else if(b.id=='cor'){const r=document.documentElement,c=['','amber','ice'],n=c[(c.indexOf(r.dataset.c||'')+1)%3];n?r.dataset.c=n:delete r.dataset.c}
+  else if(b.id=='snd'){S.snd=!S.snd;if(S.snd)beep(600)}
+  render()});
+document.addEventListener('click',e=>{const sv=e.target.closest('#mp'),pm=$('#pm');if(!sv||!pm)return;const r=sv.getBoundingClientRect(),x=Math.max(8,Math.min(372,Math.round((e.clientX-r.left)/r.width*380))),y=Math.max(8,Math.min(272,Math.round((e.clientY-r.top)/r.height*280)));S.pp=[x,y];pm.setAttribute('cx',x);pm.setAttribute('cy',y);pm.removeAttribute('visibility')});
+document.addEventListener('keydown',e=>{
+  if(/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
+  const n=TABS.length,k=e.key,m=SUBS[S.tab].length,c=items().length;
+  if(k=='ArrowRight'){S.tab=(S.tab+1)%n;S.sub=0;S.sel=0}
+  else if(k=='ArrowLeft'){S.tab=(S.tab+n-1)%n;S.sub=0;S.sel=0}
+  else if(k=='ArrowDown'){S.sel=(S.sel+1)%c}
+  else if(k=='ArrowUp'){S.sel=(S.sel+c-1)%c}
+  else if(k==','||k=='.'){S.sub=(S.sub+(k=='.'?1:m-1))%m;S.sel=0}
+  else if(k=='Enter'&&e.target.tagName!='BUTTON'){return act()}
+  else return;
+  e.preventDefault();beep(450,.02);render()});
+const SL=['Cabeça','Tronco','Braço Esquerdo','Braço Direito','Perna Esquerda','Perna Direita','Traje (corpo todo)'],
+bn=k=>INV.reduce((a,i)=>a+(i.t=='ARMADURAS'&&i.eqp&&i.sp?(i.sp[k]||0):0),0),bd=()=>INV.reduce((a,i)=>a+(i.t=='ARMADURAS'&&i.eqp?(i.df||0):0),0),
+ES=k=>S.pc?Math.max(1,S.pc.esp[k]+bn(k)):0,DEF=()=>Math.max(0,S.pc.d.def+(ES('AGI')>=9?2:1)-(S.pc.esp.AGI>=9?2:1)+bd());
+function dv(k){return S.pc?ES(k)-S.pc.esp[k]:0}
+function lm(){return S.pc?Math.max(0,S.pc.d.sorte+dv('SOR')):9}
+function armTxt(i){const r=i.rd||[0,0,0,0],sp=Object.keys(i.sp||{}).map(k=>k+' '+(i.sp[k]>0?'+':'')+i.sp[k]).join(', '),d=i.df||0;return 'Área: '+(i.ar||SL[1])+'\nRD F/E/R/V: '+r.join('/')+'\nDefesa '+(d>0?'+':'')+d+(sp?'\nSPECIAL: '+sp:'')+'\n'}
+function armSum(){const a=INV.filter(i=>i.t=='ARMADURAS'&&i.eqp);return a.length?a.map(i=>(i.ar||SL[1])+': '+i.n+' (RD '+(i.rd||[0,0,0,0]).join('/')+')').join('\n')+'\nRD = Físico/Energético/Radiativo/Venenoso':'Nenhuma armadura equipada. Cadastre e equipe peças em INV > ARMADURAS.'}
+function armIv(e){const o={i_ar:e.ar||'',i_rf:(e.rd||[])[0]||0,i_re:(e.rd||[])[1]||0,i_rr:(e.rd||[])[2]||0,i_rv:(e.rd||[])[3]||0,i_df:e.df||0};ATR.forEach(a=>o['i_s'+a[0]]=(e.sp||{})[a[0]]||0);return o}
+function eqArm(i){if(i.eqp){i.eqp=false;return say(i.n+' removida.')}const tj=x=>/^Traje/.test(x||''),sl=i.ar||SL[1];INV.forEach(x=>{if(x.t=='ARMADURAS'&&x.eqp&&(tj(sl)||tj(x.ar)||(x.ar||SL[1])==sl))x.eqp=false});i.eqp=true;say(i.n+' equipada.')}
+const TP=[['Armas Pequenas','AGI',/pequenas/i],['Armas Grandes','RES',/grandes/i],['Armas de Energia','PER',/energia/i],['Corpo a Corpo','FOR',/corpo/i],['Desarmado','FOR',/desarm/i],['Arremesso','AGI',/arremess/i],['Explosivos','PER',/explos/i]],DI=['Próxima','Média','Longa','Extrema'],
+AR=[['1–2','Cabeça',2],['3–8','Tronco',8],['9–11','Braço Esquerdo',11],['12–14','Braço Direito',14],['15–17','Perna Esquerda',17],['18–20','Perna Direita',20]],
+areaOf=v=>AR.find(a=>v<=a[2])[1],rnd=n=>1+Math.floor(Math.random()*n),cdf=v=>v==1?'1':v==2?'2':v<5?'—':'1✦';
+document.addEventListener('input',e=>{const d=e.target.dataset;if(d.iv)S.iv[d.iv]=e.target.value;if(d.vf)S.vf[d.vf]=e.target.type=='checkbox'?e.target.checked:e.target.value});
+document.addEventListener('change',e=>{if(e.target.dataset.rr)render()});
+function invForm(){const e=S.ed,c=SUBS[1][S.sub],k=e?'e':'n'+c;
+  if(S.fk!==k){S.fk=k;S.iv=e?{i_n:e.n,i_t:e.t,i_q:e.q,i_w:e.w,i_d:e.d||'',i_tp:e.tp||'',i_cd:e.cd||'',i_pf:e.pf||'',i_di:e.di||'Próxima',...armIv(e)}:{i_t:c,i_q:1,i_w:0,i_di:'Próxima'}}
+  const v=S.iv,o=(a,x)=>a.map(y=>`<option${y==x?' selected':''}>${y}</option>`).join(''),f=(k,l,t,x)=>`<label>${l}<input class="fld" data-iv="${k}" type="${t}" ${x||''} value="${esc(v[k])}"></label>`;
+  return f('i_n','Nome','text','maxlength="60"')+`<label>Categoria<select class="fld" data-iv="i_t" data-rr="1">${o(SUBS[1],v.i_t)}</select></label>`+f('i_q','Quantidade','number','min="1"')+f('i_w','Peso por unidade (kg)','number','min="0" step="0.1"')+`<label>Descrição<textarea class="fld" data-iv="i_d" rows="3" maxlength="300">${esc(v.i_d)}</textarea></label>`+(v.i_t=='ARMAS'?`<label>Tipo de ataque<select class="fld" data-iv="i_tp"><option value="">—</option>${o(TP.map(x=>x[0]),v.i_tp)}</select></label>`+f('i_cd','Dano (CD)','number','min="0"')+f('i_pf','Perfurante','number','min="0"')+`<label>Distância ideal<select class="fld" data-iv="i_di">${o(DI,v.i_di)}</select></label>`:'')+(v.i_t=='ARMADURAS'?`<label>Área coberta<select class="fld" data-iv="i_ar">${o(SL,v.i_ar||SL[1])}</select></label>`+[['i_rf','RD Físico'],['i_re','RD Energético'],['i_rr','RD Radiativo'],['i_rv','RD Venenoso']].map(x=>f(x[0],x[1],'number','min="0"')).join('')+f('i_df','Bônus de Defesa (pode ser negativo)','number','')+'<div>Bônus de SPECIAL (pode ser negativo)</div>'+ATR.map(a=>`<label style="display:inline-block;width:23%;margin-right:2%">${a[0]}<input class="fld" type="number" data-iv="i_s${a[0]}" value="${esc(v['i_s'+a[0]])}"></label>`).join(''):'')+`<button class="act" id="save">${e?'Salvar alterações':'Adicionar'}</button>`+(e?' <button class="act" id="cn">Cancelar</button>':'')}
+function invSave(){const v=S.iv,n=(v.i_n||'').trim();if(!n)return say('Informe o nome do item.');
+  const t=v.i_t,o={n,t,w:Math.max(0,parseFloat(String(v.i_w||0).replace(',','.'))||0),q:Math.max(1,parseInt(v.i_q)||1),d:(v.i_d||'').trim(),fx:t=='AJUDAS'?1:0};
+  if(t=='ARMAS'){o.tp=v.i_tp||'';o.cd=Math.max(0,parseInt(v.i_cd)||0);o.pf=Math.max(0,parseInt(v.i_pf)||0);o.di=v.i_di||'Próxima'}
+  if(t=='ARMADURAS'){const z=k=>parseInt(v[k])||0;o.ar=v.i_ar||SL[1];o.rd=[z('i_rf'),z('i_re'),z('i_rr'),z('i_rv')].map(x=>Math.max(0,x));o.df=z('i_df');o.sp={};ATR.forEach(a=>{const x=z('i_s'+a[0]);if(x)o.sp[a[0]]=x});if(S.ed&&S.ed.eqp)o.eqp=true}
+  let i=S.ed;if(i){const was=S.eq[i.t]==i.n,ot=i.t;if(was)S.eq[ot]=null;Object.keys(i).forEach(k=>delete i[k]);Object.assign(i,o);if(was&&ot==t)S.eq[t]=n}else{i=o;INV.push(o)}
+  S.ed=null;S.fk=null;S.vw=null;S.sub=SUBS[1].indexOf(t);S.sel=INV.filter(x=>x.t==t).indexOf(i);persist();say('Item salvo.');beep(700,.08);render()}
+function P(it,s){const v=S.vf,c=S.pc,g=(k,d)=>+(v[k]===undefined?d:v[k]),A=a=>c?ES(v.sor?'SOR':a):0,tp=g('tp',0),me=tp==3||tp==4;let tn,tag=0,dif;
+  if(s=='TESTE'){if(it.p){tn=A(it.p.a)+it.p.r;tag=it.p.t?it.p.r:0}else{tn=g('ta',10);tag=g('tg',0)}dif=g('dif',1)}
+  else{if(c){const p=c.per.find(x=>TP[tp][2].test(x.n));tn=A(TP[tp][1])+(p?p.r:0);tag=p&&p.t?p.r:0}else{tn=g('ta',10);tag=g('tg',0)}
+    dif=Math.max(0,g('def',1)+(me?0:Math.abs(g('di',0)-g('dist',0)))+(v.ha?1:0)-(v.fu?1:0)+(!me&&v.cu?2:0))}
+  const ex=Math.min(3,g('ex',0));return{tn,tag,dif,ex,cost:[0,1,3,6][ex],cr:g('cr',0)+1}}
+function calc(R){let s=0,c=0;R.dice.forEach(d=>{if(d.v<=R.tn)s+=(d.v==1||(R.tag&&d.v<=R.tag))?2:1;if(d.v>=21-R.cr)c++});return{s,c,ok:s>=R.dif,pa:Math.max(0,s-R.dif)}}
+function vats(it){const s=SUBS[2][S.sub],v=S.vf,R=S.R,V=(k,d)=>v[k]===undefined?d:v[k];
+  if(s!='TESTE'&&s!='ÁREA'){const w=it.inv||null;if(S.vw!==w){S.vw=w;if(w){const ti=TP.findIndex(x=>x[0]==w.tp);if(ti>=0)v.tp=ti;v.di=Math.max(0,DI.indexOf(w.di));v.cd=w.cd||0;v.pf=w.pf||0}}}
+  const num=(k,l,d,x)=>`<label>${l}<input class="fld" type="number" min="0" ${x||''} data-vf="${k}" value="${V(k,d)}"></label>`,
+  sel=(k,l,a,d)=>`<label>${l}<select class="fld" data-vf="${k}">${a.map((x,i)=>`<option value="${i}"${V(k,d)==i?' selected':''}>${x}</option>`).join('')}</select></label>`,
+  chk=(k,l)=>`<label><input type="checkbox" data-vf="${k}"${V(k,false)?' checked':''}> ${l}</label>`,B=(a,l)=>`<button class="act" data-vb="${a}">${l}</button> `,
+  common=sel('ex','Dados extras (PA)',['0 — 2d20','+1d20 (1 PA)','+2d20 (3 PA)','+3d20 (6 PA)'],0)+sel('cr','Intervalo de complicação',['1 — Normal (20)','2 — Arriscado (19–20)','3 — Perigoso (18–20)','4 — Precário (17–20)','5 — Traiçoeiro (16–20)'],0)+(S.pc&&!it.free?chk('sor','Cartas Marcadas (1 Sorte): usar SOR'):'');
+  let h=`<div>PA ${S.pa}/6 ${B('pa-','−')}${B('pa+','+')} Sorte ${S.lk} ${B('lk-','−')}${B('lk+','+')}</div><br>`;
+  if(s=='TESTE'||s=='ATAQUE'){
+    if(s=='TESTE')h+=(it.free?num('ta','Número-alvo',10)+num('tg','Grau Marcada (0 = não)',0):'')+num('dif','Dificuldade',1);
+    else{h+=sel('tp','Tipo de ataque',TP.map(x=>x[0]+' ('+x[1]+')'),0)+(S.pc?'':num('ta','Número-alvo',10)+num('tg','Grau Marcada (0 = não)',0))+num('def','Defesa do alvo (dificuldade base)',1)+sel('di','Distância ideal da arma',DI,0)+sel('dist','Distância até o alvo',DI,0)+chk('ha','Mirar em área específica (+1)')+chk('fu','Ataque furtivo (−1)')+chk('cu','Inimigo à distância Curta (+2, à distância)')}
+    const p=P(it,s);h+=common+`<pre>Número-alvo ${p.tn}${p.tag?' · crítico ≤ '+p.tag:''}\nDificuldade ${p.dif} · ${2+p.ex}d20${p.cost?' · custo '+p.cost+' PA':''}</pre>`+B('roll','Rolar')}
+  else if(s=='DANO')h+=num('cd','Dados de Combate (CD) da arma',1)+num('pa','PA gastos (corpo a corpo/arremesso, máx 3)',0,'max="3"')+num('mu','Munição extra (até a Cadência de Tiro)',0)+num('pf','Perfurante (ignora RD)',0)+num('rd','RD do alvo na área atingida',0)+B('roll','Rolar dano');
+  else h+=B('roll','Rolar 1d20');
+  if(R){const dies=(f)=>R.dice.map((d,i)=>`<button class="act" style="padding:0 8px;margin:2px${d.sel?';background:var(--g);color:var(--bg);text-shadow:none':''}" data-vb="sel" data-di="${i}">${f(d.v)}${d.rr?'*':''}</button>`).join('');
+    h+='<hr style="border:0;border-top:1px solid var(--dim)">';
+    if(R.k=='a')h+=`<div class="big">${R.v}</div><pre>Área atingida: ${areaOf(R.v)}</pre>`;
+    else if(R.k=='t'){const c=calc(R);h+=dies(x=>x)+`<pre>Sucessos: ${c.s} (dificuldade ${R.dif})\n${c.ok?'SUCESSO':'FALHA'}${R.dif==0?' (dif. 0: automático)':''}\nPA gerados: ${c.pa}\nComplicações: ${c.c}${R.gm?'\nPA entregues ao mestre: '+R.gm:''}${R.at&&c.ok?'\nÁrea atingida: '+(R.ha?'a escolhida':areaOf(R.ar)):''}</pre>`+(c.pa&&!R.sv?B('gp','Guardar '+c.pa+' PA'):'')+(R.at&&c.ok?B('dm','Rolar dano →'):'')+(R.at&&!R.aim?B('aim','Mirar (grátis, 1d20)'):'')+B('rr','Rejogar (1 Sorte/dado)')+'<br>Toque nos dados para selecionar. * = já rejogado.'}
+    else{const tot=R.dice.reduce((a,d)=>a+(d.v==1?1:d.v==2?2:d.v>=5?1:0),0),ef=R.dice.filter(d=>d.v>=5).length,rd=Math.max(0,R.rd-R.pf);h+=dies(cdf)+`<pre>Dano bruto: ${tot} · Efeitos ✦: ${ef}\nRD efetivo: ${rd}\nDANO FINAL: ${Math.max(0,tot-rd)}</pre>`+B('rr','Rejogar (1 Sorte/3 CD)')+'<br>Toque nos dados para selecionar. * = já rejogado.'}}
+  return h}
+function vb(a,di){const it=items()[S.sel],s=SUBS[2][S.sub],v=S.vf,R=S.R;
+  if(a=='pa-')S.pa=Math.max(0,S.pa-1);else if(a=='pa+')S.pa=Math.min(6,S.pa+1);else if(a=='lk-')S.lk=Math.max(0,S.lk-1);else if(a=='lk+')S.lk=Math.min(S.pc?lm():9,S.lk+1);
+  else if(a=='roll'){
+    if(s=='ÁREA')S.R={k:'a',v:rnd(20)};
+    else if(s=='DANO'){const g=k=>Math.max(0,parseInt(v[k])||0),pa=Math.min(3,g('pa')),n=g('cd')+pa+g('mu');if(!n)return say('Informe os Dados de Combate.');if(pa>S.pa)return say('PA insuficientes na reserva.');S.pa-=pa;S.R={k:'d',pf:g('pf'),rd:g('rd'),dice:Array.from({length:Math.min(n,30)},()=>({v:rnd(6)}))}}
+    else{const p=P(it,s),u=v.sor&&S.pc&&!it.free;if(u&&S.lk<1)return say('Sem Pontos de Sorte.');const pay=Math.min(S.pa,p.cost);S.pa-=pay;if(u)S.lk--;S.R={k:'t',at:s=='ATAQUE',tn:p.tn,tag:p.tag,dif:p.dif,cr:p.cr,gm:p.cost-pay,ar:rnd(20),ha:!!v.ha,w:it.inv||null,dice:Array.from({length:2+p.ex},()=>({v:rnd(20)}))}}}
+  else if(R&&a=='sel'){const d=R.dice[di];if(!d.rr)d.sel=!d.sel}
+  else if(R&&(a=='rr'||a=='aim')){const sl=R.dice.filter(d=>d.sel&&!d.rr),cd=R.k=='d',cost=a=='aim'?0:cd?Math.ceil(sl.length/3):sl.length;
+    if(!sl.length||(a=='aim'&&sl.length!=1))return say(a=='aim'?'Selecione 1 d20 para mirar.':'Selecione dados para rejogar.');
+    if(S.lk<cost)return say('Sorte insuficiente.');S.lk-=cost;if(a=='aim')R.aim=1;sl.forEach(d=>{d.v=cd?rnd(6):rnd(20);d.rr=1;d.sel=0})}
+  else if(R&&a=='gp'){S.pa=Math.min(6,S.pa+calc(R).pa);R.sv=1}
+  else if(R&&a=='dm'){const w=R.w;S.sub=2;S.R=null;S.rk=null;S.sel=Math.max(0,items().findIndex(x=>x.inv&&x.inv===w))}
+  persist();render()}
+const bootTxt='ROBCO INDUSTRIES (TM) TERMLINK\nPIP-BOY 3000 MARK IV\n\n> Verificando memória... 64K OK\n> Carregando perfil do morador do Abrigo 111...\n> Sensores de radiação: ONLINE\n\nToque ou pressione uma tecla para iniciar';
+let bi=0;const bt=setInterval(()=>{$('#boot').textContent=bootTxt.slice(0,bi+=3);if(bi>bootTxt.length)clearInterval(bt)},25);
+function start(){clearInterval(bt);$('#boot').remove();say('Setas: abas e itens. Vírgula e ponto: subabas. Enter: usar.')}
+$('#boot').addEventListener('click',start);
+document.addEventListener('keydown',()=>{if($('#boot'))start()},{once:true});
+load();render();requestAnimationFrame(tick);
+</script>
+</body>
+</html>
