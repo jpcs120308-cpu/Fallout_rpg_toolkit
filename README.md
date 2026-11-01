@@ -132,16 +132,6 @@ git clone https://github.com/jpcs120308-cpu/NOME-DO-REPOSITORIO.git
 
 ---
 
-## 📸 Capturas de tela
-
-> *Adicione aqui prints de cada ferramenta.*
-
-| Guia de Atributos | Criador de Personagem | Pip-Boy |
-|---|---|---|
-| ![guia](docs/guia.png) | ![criador](docs/criador.png) | ![pipboy](docs/pipboy.png) |
-
----
-
 ## 🧠 O que aprendi
 
 - Escrever prompts específicos, com contexto e restrições, muda completamente a qualidade da resposta
